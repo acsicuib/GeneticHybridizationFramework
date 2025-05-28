@@ -64,15 +64,17 @@ SEED2=1
 
 N_EXECUTIONS=1
 
+     # -i "data/solutions/ntw_722_050-050-025_C/obj_distance-occ_variance-pw_consumption/Replicas050/Genetics/hybrid_NSGA2-NSGA3-UNSGA3-SMSEMOA/$ALG""_$S2""_100-200_SV0-CV2-MV1_MM0.2-MC0.1-MB0.1.txt" \
+    #  --hybrid_legend NSGA2 NSGA3 UNSGA3 SMSEMOA &
 for ALG in ${HYBRID_ALGORITHMS[*]}; do
     for S2 in $(seq 1 1 $N_EXECUTIONS); do
-        python3 hybrid_plot.py plot \
-            -i "data/solutions/ntw_722_050-050-025_C/obj_distance-occ_variance-pw_consumption/Replicas050/Genetics/hybrid_NSGA2-NSGA3-UNSGA3-SMSEMOA/$ALG""_$S2""_100-200_SV0-CV2-MV1_MM0.2-MC0.1-MB0.1.txt" \
+        uv run hybrid_plot.py plot \
+            -i "data/solutions/ntw_722_050-050-025_C/obj_distance-occ_variance-pw_consumption/Replicas050/Genetics/hybrid_NSGA2-NSGA3/$ALG""_$S2""_100-200_SV0-CV2-MV1_MM0.2-MC0.1-MB0.1.txt" \
             --objectives distance occ_variance pw_consumption \
             --n_objectives 3 \
             --stack \
             --title "$ALG ecosystem with seed $S2" \
-            --hybrid_legend NSGA2 NSGA3 UNSGA3 SMSEMOA &
+            --hybrid_legend NSGA2 NSGA3 &
         pids[${S2}]=$!
     done
 

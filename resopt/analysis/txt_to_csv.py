@@ -13,12 +13,12 @@ from resopt.files.file_utils import get_solution_array
 FORMAT_STR = '%Y-%m-%d %H:%M:%S.%f'
 
 gen_steps  = [25,    50,    75,    100,   125,   150,   175]
-plot_steps = [True] + [False for _ in gen_steps][:-1]
-#plot_steps = [True  for _ in gen_steps]
+# plot_steps = [True] + [False for _ in gen_steps][:-1]
+plot_steps = [True  for _ in gen_steps]
 
 n_gen = 200
 n_objs = 3
-n_algs = 4
+n_algs = 2
 n_steps = len(gen_steps)
 obj_column = 4
 alg_column = obj_column + n_objs
@@ -31,7 +31,11 @@ alg_keys = [
         for i in range(n_algs)
     ]
 
-alg_list = ['NSGA2', 'NSGA3', 'UNSGA3', 'SMSEMOA']
+print("HERE")
+print(alg_keys)
+
+# alg_list = ['NSGA2', 'NSGA3', 'UNSGA3', 'SMSEMOA']
+alg_list = ['NSGA2', 'NSGA3']
 alg_key_remap = {alg_col: alg_name for alg_col, alg_name in zip(alg_keys, alg_list * n_steps)}
 
 
@@ -71,12 +75,14 @@ def normalplot(df, ax, alg_name = '', only_solutions = False, from_last = False)
 
 def stackplot(df, ax, alg_name = '', only_solutions = False, from_last = False):
     if from_last:
-        alg_keys = alg2_keys
-        alg_key_remap = alg2_key_remap
+        # alg_keys = ["GLStep1_1"]
+        # alg_key_remap = "GLStep1_1"
         from_last_str = 'From last dump'
     else:
-        alg_keys = alg1_keys
-        alg_key_remap = alg1_key_remap
+        # alg_keys = "GLStep1_1"
+        # alg_key_remap = "GLStep1_1"
+        # # alg_keys = alg1_keys
+        # alg_key_remap = alg1_key_remap
         from_last_str = 'From origin'
 
     dfg = df.copy(deep=True)
@@ -157,9 +163,23 @@ def txt_to_csv(files):
     for f in files:
         # DATAFRAME GENERATION
         data = f.read().split()
-        f.close()
+        # f.close()
+        # print("COL ",columns)
+        # print(data[0::columns][:10])
+        # print(data[1::columns][:10])
+        # for d, t in zip(data[0::columns], data[1::columns]):
+        #     print(d)
+                        
+        timestamp = [   
 
-        timestamp = [
+
+
+
+
+
+
+
+            
                 dt.datetime.strptime(
                         '{} {}'.format(d, t), FORMAT_STR
                     ) for d, t in zip(data[0::columns], data[1::columns])
@@ -180,6 +200,9 @@ def txt_to_csv(files):
 
 
         df_list.append(pd.DataFrame(d))
+        # print("JERE")
+        # print(type(df_list[0]))
+        # print(df_list[0].head(4))
 
     return df_list
 

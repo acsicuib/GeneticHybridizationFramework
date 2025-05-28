@@ -13,6 +13,6 @@ uv sync
 
 
 ## REMOVE
-tar czvf data.tar.gz
+tar czvf data.tar.gz data/*
 scp isaac@deepblue:/hdd/isaac/projects/GeneticHybridizationPlacement/data.tar.gz .
 tar xzvf data.tar.gz

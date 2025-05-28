@@ -17,7 +17,8 @@ def plot(configs):
     # TODO: MAKE IT WORK FOR VARIABLE NUMBER OF OBJECTIVES AND ALGORITHMS
     alg_list = configs.hybrid_legend
     df = txt_to_csv(configs.input)[0]
-
+    print(df.shape)
+    print(df.columns)
     # DATAFRAME PLOT
     fig = plt.figure(configs.title)
     fig.suptitle(configs.title)
@@ -301,9 +302,10 @@ if __name__ == "__main__":
     from resopt.param.parameters import configs
 
     if configs.stack:
-        plot(configs)
+        plot(configs) ## funciona
+        # plot_stack(configs)
     else:
         plot_scatter_gen_load(configs)
-    #plot_convergence_hybrid(configs)
+    plot_convergence_hybrid(configs)
 
 

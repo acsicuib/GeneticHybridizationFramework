@@ -211,7 +211,7 @@ arrange_all(){
 	done
 
 	SOL_NAME="$(get_solution_filename "ALL" "A" $POP_SIZE $N_GEN $SAMPLING_VERSION $CROSSOVER_VERSION $MUTATION_VERSION $MUTATION_PROB_MOVE $MUTATION_PROB_CHANGE $MUTATION_PROB_BINOMIAL)"
-	python3 main.py arrange \
+	uv run main.py arrange \
 		--n_objectives $N_OBJECTIVES \
 		-i ${ALG_FILES[*]} \
 		-o "$SOL_PREFIX/$SOL_PATH/$SOL_NAME"
