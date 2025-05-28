@@ -78,6 +78,16 @@ def STE(pf=None):
     # Just as a way to give same format as other indicator functions
     return indicator
 
+def pad_dict_list(dict_list, padel):
+    lmax = 0
+    for lname in dict_list.keys():
+        lmax = max(lmax, len(dict_list[lname]))
+    for lname in dict_list.keys():
+        ll = len(dict_list[lname])
+        if  ll < lmax:
+            dict_list[lname] += [padel] * (lmax - ll)
+    return dict_list
+
 def mean_time(date_a, time_a):
     FORMAT_STR = '%Y-%m-%d %H:%M:%S.%f'
     acc = 0.
@@ -352,7 +362,8 @@ def generate_csv(configs):
 
     df_dict.update(metrics_dict)
 
-    df = pd.DataFrame(df_dict)
+    dict_list = pad_dict_list(df_dict, np.nan)
+    df = pd.DataFrame(dict_list)
 
     df.to_csv(configs.output, index=False)
     configs.output.close()
