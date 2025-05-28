@@ -10,3 +10,9 @@ Install libraries with:
 ```
 uv sync
 ```
+
+
+## REMOVE
+tar czvf data.tar.gz
+scp isaac@deepblue:/hdd/isaac/projects/GeneticHybridizationPlacement/data.tar.gz .
+tar xzvf data.tar.gz

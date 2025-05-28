@@ -156,26 +156,26 @@ class Network:
         # services and a service can be accessed by many users, so the resulting
         # datastructure is a set of pairs of tasks/users.
         if conf.communities:
-            """    
-            Given N_NODES = 32 and GROUP_SIZE = 4:
+            # """    
+            # Given N_NODES = 32 and GROUP_SIZE = 4:
 
-                           Tree:       Partitions:
+            #                Tree:       Partitions:
 
-                            32           
-                          /    \            1 +
-                       16        16
-                      /  \      /  \        2 +
-                     8    8    8    8
-                    / \  / \  / \  / \      4 +
-                    4 4  4 4  4 4  4 4
+            #                 32           
+            #               /    \            1 +
+            #            16        16
+            #           /  \      /  \        2 +
+            #          8    8    8    8
+            #         / \  / \  / \  / \      4 +
+            #         4 4  4 4  4 4  4 4
 
-                n := "Depth of tree" = log2(N_NODES/GROUP_SIZE)
+            #     n := "Depth of tree" = log2(N_NODES/GROUP_SIZE)
 
-                  -> 2^0 + 2^1 + ... + 2^(n-1) = (2^n)-1
+            #       -> 2^0 + 2^1 + ... + 2^(n-1) = (2^n)-1
 
-                partitions = (2^log2(N_NODES/GROUP_SIZE))-1 = (N_NODES/GROUP_SIZE)-1
+            #     partitions = (2^log2(N_NODES/GROUP_SIZE))-1 = (N_NODES/GROUP_SIZE)-1
 
-            """
+            # """
             partitions = int(np.floor(conf.n_nodes/conf.group_size)) - 1
             self.tree = self._getCommunityTree(partitions)
 
