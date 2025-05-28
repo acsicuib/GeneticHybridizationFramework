@@ -8,7 +8,7 @@ source script_functions.sh
 # ==============================================================================
 
 ### Network
-# generate $SEED $NODES $TASKS $USERS $COMMUNITIES
+generate $SEED $NODES $TASKS $USERS $COMMUNITIES
 
 ### Problem solving
 # solve
@@ -126,7 +126,7 @@ SEED2=1
 N_EXECUTIONS=1
 
 #generate
-# hybrid_solve
+hybrid_solve
 get_csv_hybrid
 
 # hybrid_solve "_no_dumping"
