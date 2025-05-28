@@ -304,7 +304,9 @@ def generate_csv(configs):
 
             # Genetic Load
             print("HERE")
-            print(gl_pop_list)
+            print("i ",i)
+            print(len(gl_pop_list))
+            
             print("."*10)
             if n_algs > 0:
                 print("GEN ", gen)
