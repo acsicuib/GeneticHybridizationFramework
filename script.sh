@@ -126,7 +126,7 @@ SEED2=1
 N_EXECUTIONS=1
 
 #generate
-# hybrid_solve
+hybrid_solve
 
 get_csv_hybrid
 
