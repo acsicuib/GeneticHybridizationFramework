@@ -6,38 +6,28 @@ source script_functions.sh
 ###############################################################################
 # Constants
 ###############################################################################
-EXP_NAME="exp1"
+EXP_NAME="exp_single"
 
-OBJECTIVES=('distance' 'occ_variance' 'pw_consumption')
-
-
-
-
-# OBJECTIVES=(
-#     'distance'
-#     'occ_variance'
-#     'pw_consumption'
-#     'ntw_utilization'
-#     'occupation'
-#     'nodes'
-#     'hops'
-# )
+OBJECTIVES=(
+    'distance'
+    'occ_variance'
+    'pw_consumption'
+    'ntw_utilization'
+    'occupation'
+    'nodes'
+    'hops'
+)
 N_OBJECTIVES=${#OBJECTIVES[@]}
 
-OBJ_UPPERB_LIST=( 3   )
-POP_SIZES=(       400)
-N_GENS=(          500)
-
-
-# OBJ_UPPERB_LIST=( 2   3   4   5   6   7  )
-# POP_SIZES=(       200 250 350 450 650 950)
-# N_GENS=(          200 350 400 400 450 600)
+OBJ_UPPERB_LIST=( 2   3   4   5   6   7  )
+POP_SIZES=(       200 250 350 450 650 950)
+N_GENS=(          200 350 400 400 450 600)
 
 GEN_STEP=5 # for csv, print each 5 generations
 
 # Executions and max paralel processes
-N_EXECUTIONS=3
-N_PROC=4
+N_EXECUTIONS=10
+N_PROC=5
 
 
 
@@ -194,38 +184,38 @@ get_all_csv
 ###############################################################################
 # INFRASTRUCTURE SIZE 2
 ###############################################################################
-NODES=100
-TASKS=50
-USERS=25
+# NODES=100
+# TASKS=50
+# USERS=25
 
-generate # generate network
-play_with_objectives
-get_all_csv
+# generate # generate network
+# play_with_objectives
+# get_all_csv
 
 
 
 ###############################################################################
 # INFRASTRUCTURE SIZE 3
 ###############################################################################
-NODES=50
-TASKS=100
-USERS=25
+# NODES=50
+# TASKS=100
+# USERS=25
 
-generate # generate network
-play_with_objectives
-get_all_csv
+# generate # generate network
+# play_with_objectives
+# get_all_csv
 
 
 
 ###############################################################################
 # INFRASTRUCTURE SIZE 4
 ###############################################################################
-NODES=50
-TASKS=50
-USERS=50
+# NODES=50
+# TASKS=50
+# USERS=50
 
-generate # generate network
-play_with_objectives
-get_all_csv
+# generate # generate network
+# play_with_objectives
+# get_all_csv
 
 

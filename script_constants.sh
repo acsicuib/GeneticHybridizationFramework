@@ -19,15 +19,18 @@ MUTATION_PROB_CHANGE_LIST=(0.1 0.2)
 MUTATION_PROB_BINOMIAL=0.1
 MUTATION_PROB_BINOMIAL_LIST=(0.025 0.05)
 
-POP_SIZE=100
-# POP_SIZE=100
+POP_SIZE=400 ##for hibrids
+#POP_SIZE = 400 ##for simple execution
+
+
 #POP_SIZES=($(seq 200 50 300))
 POP_SIZES=($(seq 200 50 500))
 # N_GEN=400
-N_GEN=200
+N_GEN=500
+
 
 ALGORITHM='NSGA2'
-ALGORITHMS=('NSGA2' 'NSGA3' 'UNSGA3' 'CTAEA' 'SMSEMOA') # 'RVEA')
+ALGORITHMS=('NSGA2' 'NSGA3' 'UNSGA3' 'SMSEMOA') # 'RVEA')
 # Available: 'NSGA2' 'NSGA3' 'UNSGA3' 'CTAEA' 'SMSEMOA' 'RVEA' 'RNSGA2' 'RNSGA3'
 # Not implemented: 'AGEMOEA'
 N_ALGORITHMS=${#ALGORITHMS[@]}
@@ -44,7 +47,8 @@ N_PARTITIONS=0
 REF_POINTS_ALGORITHM='ALL'
 LAMBDA_LIST=($(LANG=en_US seq 0.1 0.2 1))
 
-OBJECTIVES=('distance' 'occ_variance' 'pw_consumption') # 'ntw_utilization' 'occupation' 'nodes' 'hops')
+# 'ntw_utilization' 'occupation' 'nodes' 'hops')
+OBJECTIVES=('distance' 'occ_variance' 'pw_consumption') 
 N_OBJECTIVES=${#OBJECTIVES[@]}
 
 
@@ -52,13 +56,14 @@ N_PROC=5
 SEED2=A
 
 HYBRID_POP_SIZE=100
-HYBRID_N_GEN=200
+HYBRID_N_GEN=100
 
 # HYBRID_GEN_STEPS=(25 50 75 100 125 150 175)
 GEN_STEP=3
-HYBRID_GEN_STEPS=(25 50 75 100 125 150 175)
+HYBRID_GEN_STEPS=(25 50 75 100 125 150 175 200 225 250 275 300 325 350 375 400 425 450 475 500)
 # HYBRID_ALGORITHMS=('NSGA2' 'NSGA3' 'UNSGA3' 'SMSEMOA')
-HYBRID_ALGORITHMS=('NSGA2' 'NSGA3')
+HYBRID_ALGORITHMS=('NSGA2' 'CTAEA' )
+# HYBRID_ALGORITHMS=('NSGA2' 'NSGA3')
 HYBRID_SOL_DUMPING_ALL="$(python3 -c "print(
         [
             [
@@ -68,6 +73,10 @@ HYBRID_SOL_DUMPING_ALL="$(python3 -c "print(
             ] for _ in range(${#HYBRID_GEN_STEPS[@]})
         ]
     )")"
+echo $HYBRID_SOL_DUMPING_ALL
+# MYHYBRID_SOL_DUMPING="[[[1,1],[1,1]],[[1,0],[1,1]],[[1,1],[1,1]]]"
+# echo $MYHYBRID_SOL_DUMPING
+
 HYBRID_SOL_DUMPING_NONE="$(python3 -c "print(
         [
             [
@@ -78,6 +87,7 @@ HYBRID_SOL_DUMPING_NONE="$(python3 -c "print(
         ]
     )")"
 HYBRID_SOL_DUMPING="$HYBRID_SOL_DUMPING_ALL"
+# HYBRID_SOL_DUMPING="$MYHYBRID_SOL_DUMPING"
 
 HYBRID_TABLE_GEN_STEPS=(1 $(seq 5 5 $((HYBRID_N_GEN - 1))) $HYBRID_N_GEN)
 

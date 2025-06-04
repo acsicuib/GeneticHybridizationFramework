@@ -20,6 +20,9 @@ def solve_p(idx, ntw, queues, barrier, configs):
 
     conf_copy = Namespace(**vars(configs))
     conf_copy.algorithm = alg_name
+    # Convert file objects to paths for the child process
+    if hasattr(conf_copy, 'output') and conf_copy.output:
+        conf_copy.output = [f.name if hasattr(f, 'name') else f for f in conf_copy.output]
 
     algorithm = get_genetic_algorithm(
             conf_copy,
@@ -51,8 +54,9 @@ def solve_p(idx, ntw, queues, barrier, configs):
         else:
             string = res.algorithm.callback.string_solution
         
-        configs.output[idx].write(string)
-        configs.output[idx].close()
+        # Open the file in the child process
+        with open(configs.output[idx], 'w') as f:
+            f.write(string)
     else:
         print("ERROR: Number of output files should match the number of " + 
                 "algorithms used", file=sys.stderr)
@@ -60,6 +64,18 @@ def solve_p(idx, ntw, queues, barrier, configs):
 def hybrid_solve(ntw, configs):
     alg_list = configs.algorithms
     n_algs = len(alg_list)
+
+    # Create a copy of configs with file objects converted to paths
+    configs_copy = Namespace(**vars(configs))
+    # Convert all file objects to paths
+    for attr_name in dir(configs_copy):
+        if not attr_name.startswith('_'):  # Skip private attributes
+            attr_value = getattr(configs_copy, attr_name)
+            if hasattr(attr_value, 'name'):  # If it's a file object
+                setattr(configs_copy, attr_name, attr_value.name)
+            elif isinstance(attr_value, list) and attr_value and hasattr(attr_value[0], 'name'):
+                # If it's a list of file objects
+                setattr(configs_copy, attr_name, [f.name if hasattr(f, 'name') else f for f in attr_value])
 
     # Process array
     p_array = []
@@ -71,7 +87,7 @@ def hybrid_solve(ntw, configs):
     barrier = Barrier(n_algs)
 
     for i in range(n_algs):
-        p = Process(target=solve_p, args=(i, ntw, queues, barrier, configs,))
+        p = Process(target=solve_p, args=(i, ntw, queues, barrier, configs_copy,))
         p.start()
         p_array.append(p)
 
