@@ -9,6 +9,7 @@ Application developed in Python for genetic optimisation of resources in the con
 Install libraries with:
 ```
 uv sync
+source .venv/bin/activate
 ```
 
 

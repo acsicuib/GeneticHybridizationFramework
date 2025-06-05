@@ -8,20 +8,22 @@ source script_functions.sh
 ###############################################################################
 EXP_NAME="exp_single"
 
-OBJECTIVES=(
-    'distance'
-    'occ_variance'
-    'pw_consumption'
-    'ntw_utilization'
-    'occupation'
-    'nodes'
-    'hops'
-)
+# OBJECTIVES=(
+#     'distance'
+#     'occ_variance'
+#     'pw_consumption'
+#     'ntw_utilization'
+#     'occupation'
+#     'nodes'
+#     'hops'
+# )
+OBJECTIVES=('distance' 'occ_variance' 'pw_consumption')
+
 N_OBJECTIVES=${#OBJECTIVES[@]}
 
-OBJ_UPPERB_LIST=( 2   3   4   5   6   7  )
-POP_SIZES=(       200 250 350 450 650 950)
-N_GENS=(          200 350 400 400 450 600)
+OBJ_UPPERB_LIST=( 3  )
+POP_SIZES=(       400)
+N_GENS=(          600)
 
 GEN_STEP=5 # for csv, print each 5 generations
 
