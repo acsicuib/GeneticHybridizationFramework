@@ -12,5 +12,6 @@ dependencies = [
     "pandas>=2.2.3",
     "pulp>=3.2.1",
     "pymoo>=0.6.1.5",
+    "pyvista>=0.45.2",
     "seaborn>=0.13.2",
 ]

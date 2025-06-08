@@ -313,20 +313,20 @@ def generate_csv(configs):
             tdelta = (dt_end - dt_start).total_seconds()
 
             # Genetic Load
-            print("HERE")
-            print("i ",i)
-            print(len(gl_pop_list))
+            # print("HERE")
+            # print("i ",i)
+            # print(len(gl_pop_list))
             
-            print("."*10)
+            # print("."*10)
             if n_algs > 0:
-                print("GEN ", gen)
-                print("N_ALGS ", n_algs)
-                print("N_steps ", list(range(n_steps)))
+                # print("GEN ", gen)
+                # print("N_ALGS ", n_algs)
+                # print("N_steps ", list(range(n_steps)))
                 for step in range(n_steps):
-                    print("\t",step)
+                    # print("\t",step)
                     gl_pop_acc = np.average(alg_gl_pop[i][step][gen-1], axis = 0)
                     gl_sol_acc = np.average(alg_gl_sol[i][step][gen-1], axis = 0)
-                    print("\t",gl_pop_acc)
+                    
                     gl_pop_list[i].append(gl_pop_acc)
                     gl_sol_list[i].append(gl_sol_acc)
 

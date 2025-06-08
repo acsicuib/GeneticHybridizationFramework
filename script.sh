@@ -3,6 +3,8 @@
 source script_constants.sh
 source script_functions.sh
 
+
+EXP_NAME="exp1"
 # ==============================================================================
 # PROGRAM
 # ==============================================================================
@@ -125,7 +127,7 @@ USERS=25
 SEED2=1
 N_EXECUTIONS=1
 
-generate
+#generate
 hybrid_solve
 # get_csv_hybrid
 

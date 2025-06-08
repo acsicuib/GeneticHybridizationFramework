@@ -77,6 +77,7 @@ def hybrid_solve(ntw, configs):
                 # If it's a list of file objects
                 setattr(configs_copy, attr_name, [f.name if hasattr(f, 'name') else f for f in attr_value])
 
+    
     # Process array
     p_array = []
 

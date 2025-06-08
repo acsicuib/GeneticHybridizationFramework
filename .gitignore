@@ -4,3 +4,12 @@ data/*
 deprecated/*
 *.gz
 .DS_Store
+resopt/analysis/__pycache__/
+resopt/problem/__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.pyw
+*.pyz
+*.pywz
+*.pyzw

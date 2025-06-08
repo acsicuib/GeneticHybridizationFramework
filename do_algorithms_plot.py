@@ -4,14 +4,13 @@ import ast
 from load_config import load_bash_config
 import matplotlib.pyplot as plt
 import matplotlib
+from matplotlib.colors import ListedColormap
 import seaborn as sns
 import os
 import sys
 import imageio.v3 as iio  # Add this import at the top
 
 config = load_bash_config('script_constants.sh') #Dont detect all the variables
-
-
 
 
 # # TEST SOME CONFIGS
@@ -34,7 +33,24 @@ def load_data(path_exp,file,replica,algorithm):
     columns += [f"o{i+1}" for i,_ in enumerate(config['OBJECTIVES'])]
  
     df = pd.read_csv(path_exp + file.format(algorithm=algorithm,replica=replica),sep=" ",header=None)
-    df.drop(columns=[len(df.columns)-1],inplace=True)
+    # df.drop(columns=[len(df.columns)-1],inplace=True) #WITH NORMALIZED FILES 
+    df.columns = columns
+    return df
+
+def load_data_hybrids(path_exp,file_hybrids,replica,algorithm):
+    if not os.path.exists(path_exp + file_hybrids.format(algorithm=algorithm,replica=replica)):
+        print(f"File does not exist: {path_exp + file_hybrids.format(algorithm=algorithm,replica=replica)}")
+        sys.exit(-1)
+
+
+    pairs = [f"tt{i}" for i in range(97)]
+    columns = ["date", "time", "pf","generation"] 
+    columns += [f"o{i+1}" for i,_ in enumerate(range(3))]
+    columns += pairs    
+ 
+    df = pd.read_csv(path_exp + file_hybrids.format(algorithm=algorithm,replica=replica),sep=" ",header=None)
+    print(len(df.columns))
+    # df.drop(columns=[len(df.columns)-1],inplace=True) #WITH NORMALIZED FILES 
     df.columns = columns
     return df
 
@@ -307,25 +323,36 @@ def plot_3d_scatter(algorithm,it,file_out,do_gif=False):
     plt.close(fig)  # Close the figure to free memory
   
 
-def plot_PF_plots(path_exp,file,ALGORITHMS,replica=1,last_generation=600,do_gif=False):
+def plot_PF_plots(replica=1,last_generation=600,with_hybrids=False,do_gif=False):
+    d_tmp = pd.DataFrame()
     dall = pd.DataFrame()
     for algorithm in ALGORITHMS:
         df = load_data(path_exp,file,replica,algorithm)
         dt = df.loc[df["generation"]==last_generation].copy()
         dt["algorithm"] = algorithm
         dall = pd.concat([dall,dt])
+
+    dall_hybrids = pd.DataFrame()
+
+    if with_hybrids:
+        for algorithm in based_hybrid:
+            df = load_data_hybrids(path_exp_hybrids,file_hybrids,replica,algorithm)
+            dt = df.loc[df["generation"]==last_generation].copy()
+            dt["algorithm"] = algorithm
+            dall_hybrids = pd.concat([dall_hybrids,dt])
     
-    # Use the recommended colormaps syntax
-    cmap = matplotlib.colormaps['Set1'].resampled(len(ALGORITHMS))
+    d_tmp = pd.concat([dall,dall_hybrids])
+    cmap = ListedColormap(custom_colors)
+    
     
     # Set consistent figure size and DPI
     fig = plt.figure(figsize=(12, 8), dpi=100)
     ax = fig.add_subplot(projection='3d')
     
     # Set consistent axis limits based on data
-    x_min, x_max = dall['o1'].min(), dall['o1'].max()
-    y_min, y_max = dall['o2'].min(), dall['o2'].max()
-    z_min, z_max = dall['o3'].min(), dall['o3'].max()
+    x_min, x_max = d_tmp['o1'].min(), d_tmp['o1'].max()
+    y_min, y_max = d_tmp['o2'].min(), d_tmp['o2'].max()
+    z_min, z_max = d_tmp['o3'].min(), d_tmp['o3'].max()
     
     # Add small padding to limits
     padding = 0.05
@@ -345,8 +372,20 @@ def plot_PF_plots(path_exp,file,ALGORITHMS,replica=1,last_generation=600,do_gif=
                   dall.loc[mask, 'o3'],
                   c=[cmap(i)],  # Use single color for each algorithm
                   label=algorithm,
+                  marker=markers[i],
                   alpha=0.7)  # Slight transparency for better visibility
-    
+    if with_hybrids:
+        cmap_hybrids = ListedColormap(custom_colors_hybrids)
+        
+        ax.scatter(dall_hybrids.loc[:, 'o1'], 
+                dall_hybrids.loc[:, 'o2'], 
+                dall_hybrids.loc[:, 'o3'],
+                c=[cmap_hybrids(0)],  # Use single color for each algorithm
+                label="Hybrid",
+                marker=markers_hybrids[0],
+                s=50,
+                alpha=0.7)  # Slight transparency for better visibility
+
     ax.set_xlabel('Distance', labelpad=10)
     ax.set_ylabel('Occupation Variance', labelpad=10)
     ax.set_zlabel('Power Consumption', labelpad=10)
@@ -382,98 +421,98 @@ def plot_PF_plots(path_exp,file,ALGORITHMS,replica=1,last_generation=600,do_gif=
 
 
 
-def get_mask_pareto_front(df):
-    """
-    Get a boolean mask indicating which solutions in a specific generation are part of the Pareto front.
+# def get_mask_pareto_front(df):
+#     """
+#     Get a boolean mask indicating which solutions in a specific generation are part of the Pareto front.
     
-    Args:
-        df (pd.DataFrame): DataFrame containing the optimization results
-        generation (int): The generation number to get the Pareto front from
+#     Args:
+#         df (pd.DataFrame): DataFrame containing the optimization results
+#         generation (int): The generation number to get the Pareto front from
         
-    Returns:
-        pd.Series: Boolean mask where True indicates a solution is part of the Pareto front
-    """
-    # Filter for the specific generation
+#     Returns:
+#         pd.Series: Boolean mask where True indicates a solution is part of the Pareto front
+#     """
+#     # Filter for the specific generation
    
-    gen_data = df
+#     gen_data = df
     
-    # Get the objective columns
-    obj_cols = ['o1', 'o2', 'o3']
+#     # Get the objective columns
+#     obj_cols = ['o1', 'o2', 'o3']
     
-    # Initialize boolean mask for Pareto front solutions
-    is_pareto = pd.Series(True, index=gen_data.index)
+#     # Initialize boolean mask for Pareto front solutions
+#     is_pareto = pd.Series(True, index=gen_data.index)
     
-    # For each solution in the generation
-    for idx, row in gen_data.iterrows():
-        # Compare with all other solutions
-        for other_idx, other_row in gen_data.iterrows():
-            if idx == other_idx:  # Skip self-comparison
-                continue
+#     # For each solution in the generation
+#     for idx, row in gen_data.iterrows():
+#         # Compare with all other solutions
+#         for other_idx, other_row in gen_data.iterrows():
+#             if idx == other_idx:  # Skip self-comparison
+#                 continue
                 
-            # Check if other solution dominates current solution
-            # A solution dominates another if it's better or equal in all objectives
-            # and strictly better in at least one objective
-            dominates = True
-            strictly_better = False
+#             # Check if other solution dominates current solution
+#             # A solution dominates another if it's better or equal in all objectives
+#             # and strictly better in at least one objective
+#             dominates = True
+#             strictly_better = False
             
-            for obj in obj_cols:
-                if other_row[obj] > row[obj]:  # Assuming minimization for all objectives
-                    dominates = False
-                    break
-                elif other_row[obj] < row[obj]:
-                    strictly_better = True
+#             for obj in obj_cols:
+#                 if other_row[obj] > row[obj]:  # Assuming minimization for all objectives
+#                     dominates = False
+#                     break
+#                 elif other_row[obj] < row[obj]:
+#                     strictly_better = True
             
-            if dominates and strictly_better:
-                is_pareto[idx] = False
-                break
+#             if dominates and strictly_better:
+#                 is_pareto[idx] = False
+#                 break
     
-    # Create a full-length boolean series with False for all non-generation rows
-    full_mask = pd.Series(False, index=df.index)
-    full_mask[gen_data.index] = is_pareto
+#     # Create a full-length boolean series with False for all non-generation rows
+#     full_mask = pd.Series(False, index=df.index)
+#     full_mask[gen_data.index] = is_pareto
     
-    return full_mask
+#     return full_mask
 
 
-def prepare_pareto_front(path_exp, file, ALGORITHMS, replicas, output_folder):
-    """
-    Prepare Pareto front data for all algorithms and replicas.
+# def prepare_pareto_front(path_exp, file, ALGORITHMS, replicas, output_folder):
+#     """
+#     Prepare Pareto front data for all algorithms and replicas.
     
-    Args:
-        path_exp (str): Path to input experiment data
-        file (str): File pattern for the data
-        ALGORITHMS (list): List of algorithm names
-        replicas (range): Range of replica numbers
-        output_folder (str): Path to save the processed files
-    """
-    # Create output folder if it doesn't exist
-    os.makedirs(output_folder, exist_ok=True)
+#     Args:
+#         path_exp (str): Path to input experiment data
+#         file (str): File pattern for the data
+#         ALGORITHMS (list): List of algorithm names
+#         replicas (range): Range of replica numbers
+#         output_folder (str): Path to save the processed files
+#     """
+#     # Create output folder if it doesn't exist
+#     os.makedirs(output_folder, exist_ok=True)
     
-    for replica in range(1,2): #TODO: Change to replicas
-        for algorithm in ALGORITHMS:
-            print(f"Preparing Pareto front for algorithm {algorithm} and replica {replica}")
+#     for replica in range(1,2): #TODO: Change to replicas
+#         for algorithm in ALGORITHMS:
+#             print(f"Preparing Pareto front for algorithm {algorithm} and replica {replica}")
             
-            # Load the data
-            df = load_data(path_exp, file, replica, algorithm)
+#             # Load the data
+#             df = load_data(path_exp, file, replica, algorithm)
             
-            # Create a copy of the DataFrame to avoid SettingWithCopyWarning
-            df = df.copy()
+#             # Create a copy of the DataFrame to avoid SettingWithCopyWarning
+#             df = df.copy()
             
-            # Initialize pareto_front column
-            df['pareto_front'] = False
+#             # Initialize pareto_front column
+#             df['pareto_front'] = False
             
-            # Process each generation
-            for generation in range(1, 600):
-                print(f"Updating Pareto front for algorithm {algorithm} and replica {replica} generation {generation}")
-                # Get mask for current generation
-                gen_mask = df['generation'] == generation
-                gen_data = df.loc[gen_mask].copy()
-                pf_mask = get_mask_pareto_front(gen_data)
-                df.loc[gen_mask, 'pareto_front'] = pf_mask.values
+#             # Process each generation
+#             for generation in range(1, 600):
+#                 print(f"Updating Pareto front for algorithm {algorithm} and replica {replica} generation {generation}")
+#                 # Get mask for current generation
+#                 gen_mask = df['generation'] == generation
+#                 gen_data = df.loc[gen_mask].copy()
+#                 pf_mask = get_mask_pareto_front(gen_data)
+#                 df.loc[gen_mask, 'pareto_front'] = pf_mask.values
             
-            # Save the updated DataFrame
-            output_path = os.path.join(output_folder, file.format(algorithm=algorithm, replica=replica))
-            df.to_csv(output_path, index=False, sep=" ", header=False)
-            print(f"Completed {algorithm} replica {replica}")
+#             # Save the updated DataFrame
+#             output_path = os.path.join(output_folder, file.format(algorithm=algorithm, replica=replica))
+#             df.to_csv(output_path, index=False, sep=" ", header=False)
+#             print(f"Completed {algorithm} replica {replica}")
 
 def plot_metrics(path_exp, file_metrics, ALGORITHMS):
     """
@@ -490,7 +529,7 @@ def plot_metrics(path_exp, file_metrics, ALGORITHMS):
     # Create a figure with subplots for each metric
     metrics = ['GD', 'IGD', 'HV', 'S', 'STE']
     fig, axes = plt.subplots(len(metrics), 1, figsize=(12, 15))
-    fig.suptitle('Metrics Comparison Across Algorithms', fontsize=16)
+    # fig.suptitle('Metrics Comparison Across Algorithms', fontsize=16)
     
     # Plot each metric
     for i, metric in enumerate(metrics):
@@ -512,7 +551,7 @@ def plot_metrics(path_exp, file_metrics, ALGORITHMS):
     save_plot(fig, 'metrics_boxplot')
     plt.show()
 
-def plot_metrics_time_series(path_exp, file_metrics, algorithms):
+def plot_metrics_time_series(path_exp, file_metrics,file_metrics_hybrids, algorithms):
     """
     Plot time series of metrics (GD, IGD, HV, S, STE) across generations for all algorithms.
     Each metric has its own subplot, with different algorithms shown as lines.
@@ -524,15 +563,17 @@ def plot_metrics_time_series(path_exp, file_metrics, algorithms):
     """
     # Read the metrics file
     df = pd.read_csv(path_exp + file_metrics)
-    
+    df_hybrids = pd.read_csv(path_exp + file_metrics_hybrids)
+
     # Create a figure with subplots for each metric
     metrics = ['GD', 'IGD', 'HV', 'S', 'STE']
     fig, axes = plt.subplots(len(metrics), 1, figsize=(12, 15))
-    fig.suptitle('Metrics Evolution Across Generations', fontsize=16, y=0.95)
+    # fig.suptitle('Metrics Evolution Across Generations', fontsize=16, y=0.95)
     
     # Define a color palette for algorithms
-    colors = plt.cm.Set2(np.linspace(0, 1, len(algorithms)))
-    
+    colors = custom_colors
+    colors_hybrids = custom_colors_hybrids
+
     # Create a single legend for all subplots
     handles = []
     labels = []
@@ -542,33 +583,54 @@ def plot_metrics_time_series(path_exp, file_metrics, algorithms):
         ax = axes[i]
         
         # Plot each algorithm
-        for alg, color in zip(algorithms, colors):
+        for j, alg in enumerate(algorithms):
             # Get data for this algorithm
             alg_data = df[df['Algorithm'] == alg]
-            
             # Group by generation and calculate mean and std
             grouped = alg_data.groupby('Generation')[metric].agg(['mean', 'std'])
-            
-            # Plot mean with error bars
+
+            # Plot mean with error bars for original algorithm
             line = ax.plot(grouped.index, grouped['mean'], 
                          label=alg, 
-                         color=color,
+                         color=colors[j],
                          linewidth=2,
                          marker='o',
                          markersize=3,
                          markevery=10)  # Show markers every 10 generations
             
-            # Add shaded area for standard deviation
+            # Add shaded area for standard deviation for original algorithm
             ax.fill_between(grouped.index, 
                           grouped['mean'] - grouped['std'],
                           grouped['mean'] + grouped['std'],
-                          color=color,
+                          color=colors[j],
                           alpha=0.2)
             
             # Store handle and label for legend
             if i == 0:  # Only need to store once
                 handles.extend(line)
                 labels.append(alg)
+        # end single algorithms
+        
+        grouped_hybrids = df_hybrids.groupby('Generation')[metric].agg(['mean', 'std'])
+        print(grouped_hybrids)
+        # Plot mean with error bars for hybrid
+        linehybrids = ax.plot(grouped_hybrids.index, grouped_hybrids['mean'], 
+                        label="Hybrid", 
+                        color=colors_hybrids[0],
+                        linewidth=2,
+                        marker='v',
+                        markersize=4,
+                        markevery=10)  # Show markers every 10 generations
+        # Add shaded area for standard deviation for hybrid
+        ax.fill_between(grouped_hybrids.index, 
+                        grouped_hybrids['mean'] - grouped_hybrids['std'],
+                        grouped_hybrids['mean'] + grouped_hybrids['std'],
+                        color=colors_hybrids[0],
+                        alpha=0.2)
+
+        if i == 0:  # Only need to store once
+            handles.extend(linehybrids)
+            labels.append("Hybrid")
         
         # Customize subplot
         ax.set_xlabel('Generation', fontsize=10)
@@ -611,30 +673,43 @@ def plot_metrics_time_series(path_exp, file_metrics, algorithms):
     save_plot(fig, 'metrics_time_series')
     plt.show()
 
+
+path_exp = "data_individualexp/"
+path_exp_hybrids = "data_individualexp/hybrids/"
+file = "{algorithm}_{replica}_400-600_SV0-CV2-MV1_MM0.2-MC0.1-MB0.1.normalized.txt"
+file_hybrids = "{algorithm}_{replica}_100-600_SV0-CV2-MV1_MM0.2-MC0.1-MB0.1.txt"
+replicas = range(1,11)
+ALGORITHMS = ['NSGA2','NSGA3','UNSGA3','SMSEMOA']
+# Colores personalizados (pueden ser RGB o hex)
+custom_colors = ['#FF595E', '#8AC926', '#1982C4', '#6A4C93']
+# custom_colors = ['#ffadad', '#caffbf', '#a0c4ff', '#ffc6ff']
+cmap = ListedColormap(custom_colors)
+markers = ['o', 'o', 'o', 'o'] 
+# based_hybrid = ['NSGA2','NSGA3','UNSGA3','SMSEMOA']
+based_hybrid = ['NSGA2',"NSGA3","UNSGA3","SMSEMOA"]
+# based_hybrid = ['Hybrids']
+# custom_colors_hybrids = ['#d00000','#70e000','#0496ff','#7209b7']
+# markers_hybrids = ['v','v','v','v']
+markers_hybrids = ['v']
+custom_colors_hybrids = ['#ff8500']
+
+
 if __name__ == "__main__":
-    ### MANUAL SPC OF FILE CONFIGURATION
-    path_exp = "data_individualexp/"
-    file = "{algorithm}_{replica}_400-600_SV0-CV2-MV1_MM0.2-MC0.1-MB0.1.txt"
-    replicas = range(1,11)
-    ALGORITHMS = ['NSGA2','NSGA3','UNSGA3','SMSEMOA']
-    
-    # Update each file with a new boolean column indicating if the solution is in the Pareto front
-    ### ONE SHOT RUN
-    # prepare_pareto_front(path_exp, file, ALGORITHMS, replicas, output_folder=path_exp+"pf_filtered/")
-    ### END OF ONE SHOT RUN
-
-    path_exppf = "data_individualexp/pf_filtered/"
-
     # plot_3d_scatter("NSGA2",1,file_out="animation",do_gif=False,)
     # create_animation_gif("NSGA2_animation.gif",start_name="movie",duration=0.05)  # 50ms per frame
 
-    # plot_PF_plots(path_exppf,file,ALGORITHMS,replica=1,last_generation=600,do_gif=True)
-    # create_animation_gif("pf_animation.gif",start_name="pf_movie",duration=0.05)  # 50ms per frame
+    # ONly one specific generation
+    do_gif = False
+    plot_PF_plots(replica=1,last_generation=600,
+                  with_hybrids=True,
+                  do_gif=do_gif)
+    if do_gif:
+        create_animation_gif("pf_animation_all.gif",start_name="pf_movie",duration=0.05)  # 50ms per frame
     
     # Clean up the individual movie frame files
     # cleanup_movie_frames()
 
-    # WORKS
-    # file_metrics = "table_SMSEMOA_400:600.csv"
-    # plot_metrics(path_exp,file_metrics,ALGORITHMS)
-    # plot_metrics_time_series(path_exp, file_metrics, ALGORITHMS)
+    # # Perfecta 
+    # file_metrics = "table_400:600.csv"
+    # file_metrics_hybrids = "hybrids/table_merge.csv"
+    # plot_metrics_time_series(path_exp, file_metrics,file_metrics_hybrids, ALGORITHMS)

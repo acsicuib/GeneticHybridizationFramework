@@ -272,8 +272,10 @@ def solve(ntw, configs):
             return None
 
         if configs.save_history:
+            print("In SOLVE return res.algorithm.callback.string_history") # HACE ESTO
             return res.algorithm.callback.string_history
         else:
+            print("In SOLVE return res.algorithm.callback.string_solution")
             return res.algorithm.callback.string_solution
 
 if __name__ == '__main__':

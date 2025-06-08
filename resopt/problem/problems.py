@@ -228,6 +228,7 @@ class Problem01v3(ElementwiseProblem):
 
         g2 = np.all(np.sum(self.network.getTaskNodeCPUUsageMatrix(matrix),axis=0) <= self.network.getNodeCPUArray())
 
+        
         if self.multimode:
             out['F'] = f_norm
             out['F_original'] = f_original
