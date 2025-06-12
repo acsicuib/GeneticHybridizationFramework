@@ -19,14 +19,14 @@ MUTATION_PROB_CHANGE_LIST=(0.1 0.2)
 MUTATION_PROB_BINOMIAL=0.1
 MUTATION_PROB_BINOMIAL_LIST=(0.025 0.05)
 
-POP_SIZE=100 ##for hibrids
-#POP_SIZE = 400 ##for simple execution
+# POP_SIZE=600 ##for hibrids
+POP_SIZE = 400 ##for simple execution
 
 
 #POP_SIZES=($(seq 200 50 300))
 # POP_SIZES=($(seq 200 50 100))
 # N_GEN=400
-N_GEN=100
+N_GEN=600
 
 
 ALGORITHM='NSGA2'
