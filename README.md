@@ -11,6 +11,21 @@ Install libraries with:
 uv sync
 source .venv/bin/activate
 ```
+## Experiment running
+
+1º Single executions
+```
+.\script_exp1.sh
+normalize_solutions.py
+```
+
+2º Hybrids
+.script.sh
+
+3º Compute the final pf from all single and hybrids
+
+
+
 
 
 ## REMOVE

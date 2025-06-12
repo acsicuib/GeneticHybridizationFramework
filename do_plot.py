@@ -1,7 +1,7 @@
 import pandas as pd
 import numpy as np
 import ast
-from load_config import load_bash_config
+from utils import load_bash_config
 import matplotlib.pyplot as plt
 import seaborn as sns
 import os

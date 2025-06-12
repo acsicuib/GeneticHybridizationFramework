@@ -2,6 +2,9 @@ import re
 import ast
 import subprocess
 from pathlib import Path
+import pandas as pd
+import os
+import sys
 
 def parse_bash_value(value_str):
     """Parse a bash value into a Python value."""
@@ -70,6 +73,35 @@ def load_bash_config(bash_script_path):
             config[var_name] = var_value
     
     return config
+
+
+def load_data_normalized(input_file,config):
+    if not os.path.exists(input_file):
+        print(f"File does not exist: {input_file}")
+        sys.exit(-1)
+
+    columns = ["date", "time", "generation"] 
+    columns += [f"o{i+1}" for i,_ in enumerate(config['OBJECTIVES'])]
+ 
+    df = pd.read_csv(input_file,sep=" ",header=None)
+    # df.drop(columns=[len(df.columns)-1],inplace=True) #WITH NORMALIZED FILES 
+    df.columns = columns
+    return df
+
+def load_data_hybrids(input_file,config,seq = 97):
+    if not os.path.exists(input_file):
+        print(f"File does not exist: {input_file}")
+        sys.exit(-1)
+
+    pairs = [f"tt{i}" for i in range(seq)] ## 97 depends on sequence and number of hybrids
+    columns = ["date", "time", "pf","generation"] 
+    columns += [f"o{i+1}" for i,_ in enumerate(config['OBJECTIVES'])]
+    columns += pairs    
+ 
+    df = pd.read_csv(input_file,sep=" ",header=None)
+    df.columns = columns
+    return df
+
 
 if __name__ == "__main__":
     # Get the path to script_constants.sh

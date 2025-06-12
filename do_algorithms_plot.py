@@ -1,7 +1,7 @@
 import pandas as pd
 import numpy as np
 import ast
-from load_config import load_bash_config
+from utils import load_bash_config, load_data_normalized
 import matplotlib.pyplot as plt
 import matplotlib
 from matplotlib.colors import ListedColormap
@@ -24,35 +24,35 @@ config = load_bash_config('script_constants.sh') #Dont detect all the variables
 
 #check if results file exists
 
-def load_data(path_exp,file,replica,algorithm):
-    if not os.path.exists(path_exp + file.format(algorithm=algorithm,replica=replica)):
-        print(f"File does not exist: {path_exp + file.format(algorithm=algorithm,replica=replica)}")
-        sys.exit(-1)
+# def load_data(path_exp,file,replica,algorithm):
+#     if not os.path.exists(path_exp + file.format(algorithm=algorithm,replica=replica)):
+#         print(f"File does not exist: {path_exp + file.format(algorithm=algorithm,replica=replica)}")
+#         sys.exit(-1)
 
-    columns = ["date", "time", "generation"] 
-    columns += [f"o{i+1}" for i,_ in enumerate(config['OBJECTIVES'])]
+#     columns = ["date", "time", "generation"] 
+#     columns += [f"o{i+1}" for i,_ in enumerate(config['OBJECTIVES'])]
  
-    df = pd.read_csv(path_exp + file.format(algorithm=algorithm,replica=replica),sep=" ",header=None)
-    # df.drop(columns=[len(df.columns)-1],inplace=True) #WITH NORMALIZED FILES 
-    df.columns = columns
-    return df
+#     df = pd.read_csv(path_exp + file.format(algorithm=algorithm,replica=replica),sep=" ",header=None)
+#     # df.drop(columns=[len(df.columns)-1],inplace=True) #WITH NORMALIZED FILES 
+#     df.columns = columns
+#     return df
 
-def load_data_hybrids(path_exp,file_hybrids,replica,algorithm):
-    if not os.path.exists(path_exp + file_hybrids.format(algorithm=algorithm,replica=replica)):
-        print(f"File does not exist: {path_exp + file_hybrids.format(algorithm=algorithm,replica=replica)}")
-        sys.exit(-1)
+# def load_data_hybrids(path_exp,file_hybrids,replica,algorithm):
+#     if not os.path.exists(path_exp + file_hybrids.format(algorithm=algorithm,replica=replica)):
+#         print(f"File does not exist: {path_exp + file_hybrids.format(algorithm=algorithm,replica=replica)}")
+#         sys.exit(-1)
 
 
-    pairs = [f"tt{i}" for i in range(97)]
-    columns = ["date", "time", "pf","generation"] 
-    columns += [f"o{i+1}" for i,_ in enumerate(range(3))]
-    columns += pairs    
+#     pairs = [f"tt{i}" for i in range(97)]
+#     columns = ["date", "time", "pf","generation"] 
+#     columns += [f"o{i+1}" for i,_ in enumerate(range(3))]
+#     columns += pairs    
  
-    df = pd.read_csv(path_exp + file_hybrids.format(algorithm=algorithm,replica=replica),sep=" ",header=None)
-    print(len(df.columns))
-    # df.drop(columns=[len(df.columns)-1],inplace=True) #WITH NORMALIZED FILES 
-    df.columns = columns
-    return df
+#     df = pd.read_csv(path_exp + file_hybrids.format(algorithm=algorithm,replica=replica),sep=" ",header=None)
+#     print(len(df.columns))
+#     # df.drop(columns=[len(df.columns)-1],inplace=True) #WITH NORMALIZED FILES 
+#     df.columns = columns
+#     return df
 
 def save_plot(fig, filename, dpi=300, bbox_inches='tight'):
     """Save the plot to a file with high resolution"""
@@ -327,7 +327,7 @@ def plot_PF_plots(replica=1,last_generation=600,with_hybrids=False,do_gif=False)
     d_tmp = pd.DataFrame()
     dall = pd.DataFrame()
     for algorithm in ALGORITHMS:
-        df = load_data(path_exp,file,replica,algorithm)
+        df = load_data_normalized(path_exp,file,replica,algorithm)
         dt = df.loc[df["generation"]==last_generation].copy()
         dt["algorithm"] = algorithm
         dall = pd.concat([dall,dt])
