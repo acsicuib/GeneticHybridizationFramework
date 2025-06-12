@@ -84,6 +84,34 @@ paralel_solve_seed() {
     done
 }
 
+paralel_hybrid_solve_seed() {
+    # Iterations needed for distributing N_EXECUTIONS 
+    # among N_PROC (max CPU usage control)
+    N_ITER=$((
+            N_EXECUTIONS % N_PROC == 0 ?
+            N_EXECUTIONS / N_PROC :
+            N_EXECUTIONS / N_PROC + 1
+        ))
+    for ITER in $(seq 1 1 $N_ITER); do
+        START=$(((ITER - 1) * N_PROC + 1))
+        END=$((
+                N_EXECUTIONS <= ITER * N_PROC ?
+                N_EXECUTIONS :
+                ITER * N_PROC))
+
+        for SEED2 in $(seq $START 1 $END); do
+            echo "    Running hybrid_solve with seed $SEED2"
+            hybrid_solve &
+            pids[${SEED2}]=$!
+        done
+
+        for pid in ${pids[*]}; do
+            wait $pid
+        done
+
+    done
+}
+
 paralel_table_generation() {
     OBJECTIVES_AUX=(${OBJECTIVES[@]})
     OBJ_PAIRS=()
@@ -125,10 +153,10 @@ NODES=50
 TASKS=50
 USERS=25
 SEED2=1
-N_EXECUTIONS=1
+N_EXECUTIONS=30
 
 #generate
-hybrid_solve
+paralel_hybrid_solve_seed
 # get_csv_hybrid
 
 # hybrid_solve "_no_dumping"
