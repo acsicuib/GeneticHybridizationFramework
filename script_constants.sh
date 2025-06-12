@@ -105,4 +105,5 @@ ALY_PREFIX="data/analysis"
 PREFIX="data/solutions/P$POP_SIZE-G$N_GEN/MM$MUTATION_PROB_MOVE-MC$MUTATION_PROB_CHANGE/new_crossover"
 PREFIX2="data/solutions/P$POP_SIZE-G$N_GEN/MM$MUTATION_PROB_MOVE-MC$MUTATION_PROB_CHANGE/communities"
 
-
+# This value could be changed in script.sh or in script_exp1.sh, but it is here to avoid errors in python scripts
+N_EXECUTIONS=30

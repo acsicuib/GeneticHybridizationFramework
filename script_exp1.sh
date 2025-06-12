@@ -25,8 +25,8 @@ OBJECTIVES=('distance' 'occ_variance' 'pw_consumption')
 N_OBJECTIVES=${#OBJECTIVES[@]}
 
 OBJ_UPPERB_LIST=( 3   )
-POP_SIZES=(       100)
-N_GENS=(          100)
+POP_SIZES=(       400)
+N_GENS=(          600)
 
 
 # OBJ_UPPERB_LIST=( 2   3   4   5   6   7  )
@@ -36,7 +36,7 @@ N_GENS=(          100)
 GEN_STEP=5 # for csv, print each 5 generations
 
 # Executions and max paralel processes
-N_EXECUTIONS=1
+N_EXECUTIONS=30
 N_PROC=4
 
 
@@ -185,9 +185,9 @@ NODES=50
 TASKS=50
 USERS=25
 
-# generate # generate network
+generate # generate network
 solve
-#get_all_csv
+get_all_csv
 
 
 
