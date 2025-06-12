@@ -28,7 +28,7 @@ N_GENS=(          600)
 GEN_STEP=5 # for csv, print each 5 generations
 
 # Executions and max paralel processes
-N_EXECUTIONS=10
+N_EXECUTIONS=30
 N_PROC=5
 
 
