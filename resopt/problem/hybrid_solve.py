@@ -33,7 +33,7 @@ def solve_p(idx, ntw, queues, barrier, configs):
             n_gen_steps = n_gen_steps
         )
 
-    problem = Problem01v3(ntw, configs.objectives, hybrid=True)
+    problem = Problem01v4(ntw, configs.objectives, hybrid=True)
     termination = get_termination(configs.termination_type, configs.n_gen)
 
     print(f'{alg_name} start')
