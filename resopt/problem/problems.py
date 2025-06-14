@@ -239,7 +239,7 @@ class Problem01v2(ElementwiseProblem):
 
 
 
-# class Problem01v3(ElementwiseProblem):
+class Problem01v3(ElementwiseProblem):
     """
     VARIABLES:
         - 1 matriz de NumPy de n×m enteros, filas tareas y columnas nodos
