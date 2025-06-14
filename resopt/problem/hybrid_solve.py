@@ -5,7 +5,7 @@ from pymoo.termination import get_termination
 from pymoo.optimize import minimize
 
 from resopt.problem.solve_problem import get_genetic_algorithm
-from resopt.problem.problems import Problem01v3
+from resopt.problem.problems import Problem01v4
 
 from multiprocessing import Process, Queue, Barrier
 import time
