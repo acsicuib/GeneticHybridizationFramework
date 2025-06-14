@@ -96,6 +96,10 @@ def hybrid_solve(ntw, configs):
         p.join()
     pass
 
+    # Clean up resources
+    for queue in queues:
+        queue.close()
+        queue.join_thread()
 
 
 # Concurrency simulation
