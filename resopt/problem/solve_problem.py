@@ -1,4 +1,4 @@
-from resopt.problem.problems import Problem01v3
+from resopt.problem.problems import Problem01v3, Problem01v4
 from resopt.problem.problem_tools import *
 #from problem_tools import MySampling_v1, MyCrossover_v1, MyCrossover_v2, MyRepair, MyMutation, MyDuplicateElimination, MyCallback
 from resopt.problem.problem_ilp import ProblemILP
@@ -251,7 +251,7 @@ def solve(ntw, configs):
         #return "{} {}".format(problem.getSingleModeObjective(), '0')
 
     else:
-        problem = Problem01v3(ntw, o_list, multimode=not configs.single_mode, l=configs.lmb)
+        problem = Problem01v4(ntw, o_list, multimode=not configs.single_mode, l=configs.lmb)
         termination = get_termination(configs.termination_type, configs.n_gen)
 
         algorithm = get_genetic_algorithm(configs)

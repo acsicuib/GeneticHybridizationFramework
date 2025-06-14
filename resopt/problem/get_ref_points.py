@@ -2,7 +2,7 @@ import numpy as np
 import random
 import pickle
 
-from resopt.problem.problems import Problem01v3 
+from resopt.problem.problems import Problem01v3, Problem01v4 
 from resopt.files.file_utils import get_solution_array
 
 def solutions_to_ref_points(configs):
