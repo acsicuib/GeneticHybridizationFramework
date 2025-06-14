@@ -519,7 +519,7 @@ if __name__ == '__main__':
 
     ntw = pickle.load(configs.input)
 
-    problem = Problem01v3(ntw)
+    problem = Problem01v4(ntw)
 
     fig, ax = plt.subplots()
 
