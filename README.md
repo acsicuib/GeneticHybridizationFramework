@@ -15,14 +15,17 @@ source .venv/bin/activate
 
 1º Single executions
 ```
-.\script_exp1.sh
+.\run_single.sh
 normalize_solutions.py
 ```
 
 2º Hybrids
-.script.sh
+.\run_hybrids.sh
 
 3º Compute the final pf from all single and hybrids
+uv run compute_unified_PF.py
+
+un run compute_indicator.py
 
 
 

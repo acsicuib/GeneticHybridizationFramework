@@ -8,27 +8,27 @@ from utils import load_bash_config, load_data_normalized, load_data_hybrids
 from datetime import datetime
 import sys
 import pickle
+import os
 
-
-def normalize_pf():
-    pf = np.zeros((1, 3))
-        # Normalization of everything
+# def normalize_pf():
+#     pf = np.zeros((1, 3))
+#         # Normalization of everything
    
-    ntw = pickle.load(open("data_individualexp/ntw_722_050-050-025_C", "rb"))
+#     ntw = pickle.load(open("data_individualexp/ntw_722_050-050-025_C", "rb"))
 
-    obj_list = ['distance', 'occ_variance', 'pw_consumption']
-    o_min_lst, o_max_lst = [], []
-    for o in range(n_obj):
-        o_min_aux, o_max_aux = ntw.getObjectiveBounds(obj_list[o])
-        o_min_lst.append(o_min_aux)
-        o_max_lst.append(o_max_aux)
+#     obj_list = ['distance', 'occ_variance', 'pw_consumption']
+#     o_min_lst, o_max_lst = [], []
+#     for o in range(n_obj):
+#         o_min_aux, o_max_aux = ntw.getObjectiveBounds(obj_list[o])
+#         o_min_lst.append(o_min_aux)
+#         o_max_lst.append(o_max_aux)
 
-    o_min, o_max = np.array(o_min_lst), np.array(o_max_lst)
+#     o_min, o_max = np.array(o_min_lst), np.array(o_max_lst)
 
-    for o in range(n_obj):
-        pf[:,o] = (pf[:,o] - o_min[o]) / (o_max[o] - o_min[o])
+#     for o in range(n_obj):
+#         pf[:,o] = (pf[:,o] - o_min[o]) / (o_max[o] - o_min[o])
 
-    return pf
+#     return pf
 
 if __name__ == "__main__":
     config = load_bash_config('script_constants.sh') #Dont detect all the variables
@@ -49,9 +49,14 @@ if __name__ == "__main__":
     file_hybrids = path_exp_hybrids+"{algorithm}_{seed2}_{POP_SIZE}-{HYBRID_N_GEN}_SV0-CV2-MV1_MM0.2-MC0.1-MB0.1.txt"
     based_hybrid = config['HYBRID_ALGORITHMS']
 
-
-    
-    pf = normalize_pf()
+    # Load Pareto front
+    if os.path.exists("pareto_front.txt"):
+        pf = pd.read_csv("pareto_front.txt", sep="\t")
+        pf = pf.loc[:, [f"o{i+1}" for i in range(N_OBJECTIVES)]]
+        pf = pf.values
+    else:
+        sys.exit("Pareto front file not found")
+    print("Length of Pareto front: ", len(pf))
 
 
     for seed2 in range(1,N_EXECUTIONS+1):
@@ -99,7 +104,7 @@ if __name__ == "__main__":
             # Performance indicators
             for name, ind_c in INDICATORS.items():
                 if name == 'HV':
-                    ind = ind_c(np.ones((3)))
+                    ind = ind_c(pf)
                 else:
                     # GD and IGD uses Pareto front
                     ind = ind_c(pf)

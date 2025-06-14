@@ -19,9 +19,7 @@ MUTATION_PROB_CHANGE_LIST=(0.1 0.2)
 MUTATION_PROB_BINOMIAL=0.1
 MUTATION_PROB_BINOMIAL_LIST=(0.025 0.05)
 
-# POP_SIZE=600 ##for hibrids
 POP_SIZE = 400 ##for simple execution
-
 
 #POP_SIZES=($(seq 200 50 300))
 # POP_SIZES=($(seq 200 50 100))
@@ -47,6 +45,7 @@ N_PARTITIONS=0
 REF_POINTS_ALGORITHM='ALL'
 LAMBDA_LIST=($(LANG=en_US seq 0.1 0.2 1))
 
+### FOR HYBRIDS and standalone executions
 # 'ntw_utilization' 'occupation' 'nodes' 'hops')
 OBJECTIVES=('distance' 'occ_variance' 'pw_consumption') 
 N_OBJECTIVES=${#OBJECTIVES[@]}
@@ -56,9 +55,9 @@ N_PROC=5
 SEED2=A
 SEED2=1
 
-# HYBRID_POP_SIZE=100
-# HYBRID_N_GEN=600
-
+###
+### FOR HYBRIDS
+###
 HYBRID_POP_SIZE=100
 HYBRID_N_GEN=600
 
