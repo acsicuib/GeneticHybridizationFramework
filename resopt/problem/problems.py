@@ -3,7 +3,7 @@ from pymoo.core.problem   import Problem, ElementwiseProblem
 from resopt.problem.problem_tools import MySampling_v2, MyCrossover_v3, \
         MyRepair, MyMutation_v2, MyDuplicateElimination, MyCallback
 from resopt.param.default import OBJ_LIST
-from resopt.problem.problems import Problem01v3
+
 from pymoo.termination import get_termination
 from pymoo.algorithms.moo.nsga2  import NSGA2
 from pymoo.optimize import minimize
