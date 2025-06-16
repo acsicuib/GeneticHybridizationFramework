@@ -86,7 +86,7 @@ paralel_solve_seed() {
 
 paralel_hybrid_solve_seed() {
     # Run each seed execution sequentially
-    for SEED2 in $(seq 13 18 1); do
+    for SEED2 in $(seq 13 1 18); do 
         echo "    Running hybrid_solve with seed $SEED2"
         hybrid_solve
     done
