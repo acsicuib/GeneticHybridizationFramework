@@ -9,6 +9,7 @@ import seaborn as sns
 import os
 import sys
 import imageio.v3 as iio  # Add this import at the top
+from utils import load_data, load_data_normalized, load_data_hybrids
 
 config = load_bash_config('script_constants.sh') #Dont detect all the variables
 
@@ -676,9 +677,9 @@ def plot_metrics_time_series(path_exp, file_metrics,file_metrics_hybrids, algori
 
 path_exp = "data_individualexp/"
 path_exp_hybrids = "data_individualexp/hybrids/"
-file = "{algorithm}_{replica}_400-600_SV0-CV2-MV1_MM0.2-MC0.1-MB0.1.normalized.txt"
-file_hybrids = "{algorithm}_{replica}_100-600_SV0-CV2-MV1_MM0.2-MC0.1-MB0.1.txt"
-replicas = range(1,11)
+file = "{algorithm}_{seed}_400-600_SV0-CV2-MV1_MM0.2-MC0.1-MB0.1.normalized.txt"
+file_hybrids = "{algorithm}_{seed}_100-600_SV0-CV2-MV1_MM0.2-MC0.1-MB0.1.txt"
+seed = range(1,11)
 ALGORITHMS = ['NSGA2','NSGA3','UNSGA3','SMSEMOA']
 # Colores personalizados (pueden ser RGB o hex)
 custom_colors = ['#FF595E', '#8AC926', '#1982C4', '#6A4C93']
@@ -700,7 +701,7 @@ if __name__ == "__main__":
 
     # ONly one specific generation
     do_gif = False
-    plot_PF_plots(replica=1,last_generation=600,
+    plot_PF_plots(seed=1,last_generation=600,
                   with_hybrids=True,
                   do_gif=do_gif)
     if do_gif:

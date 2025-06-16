@@ -2,8 +2,9 @@ import numpy as np
 import random
 from resopt.files.file_utils import parse_file
 
-# TODO: Arreglar para n dimensiones
+
 def get_pareto_front_from_array(array):
+    """Original implementation for comparison"""
     size  = array.shape[0]
     n_obj = array.shape[1]
     array_assigned = [True] * size
@@ -21,14 +22,11 @@ def get_pareto_front_from_array(array):
                 if array[i,obj] > array[j,obj]:
                     all_o = False
                     break
-            # all_o = i[o1] < j[o1] AND
-            #         i[o2] < j[o2] AND
-            #              ...      AND
-            #         i[on] < j[on]
 
             if all_o: array_assigned[j] = False
 
     return array[array_assigned]
+
 
 # OLD ALGORITHM
 #def get_pareto_front_from_array(array, n_obj=2):
@@ -68,8 +66,8 @@ def get_pareto_front_from_files(configs):
 
 
 if __name__ == '__main__':
-    from parameters import configs
-    random.seed(configs.seed)
+    # from parameters import configs
+    # random.seed(configs.seed)
 
     array = np.array([[3,3,5], [3,3,4],[2,3,4],[4,3,4],[3,2,4],[3,4,4], [3,1,3],[2,2,3],[3,2,3],[4,2,3],[1,3,3],[2,3,3],[3,3,3],[4,3,3],[5,3,3],[2,4,3],[3,4,3],[4,4,3],[3,5,3], [3,2,2],[2,3,2],[3,3,2],[4,3,2],[3,4,2], [3,3,1]])
 

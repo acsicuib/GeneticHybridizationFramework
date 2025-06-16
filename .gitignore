@@ -13,3 +13,7 @@ resopt/problem/__pycache__/
 *.pyz
 *.pywz
 *.pyzw
+results/*
+*.txt
+*.log
+visualization.html

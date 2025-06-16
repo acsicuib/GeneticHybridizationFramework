@@ -6,6 +6,14 @@ import os
 from utils import load_bash_config
 
 def normalize_objectives(input_file, network_file, output_file):
+    """
+    Normalize the objectives of the solutions to the network bounds 
+    Used in GA standalone 
+
+        input_file: file with the solutions
+    network_file: file with the network
+    output_file: file with the normalized solutions
+    """
     # Load the network to get objective bounds
     with open(network_file, 'rb') as f:
         network = pickle.load(f)
@@ -57,14 +65,19 @@ if __name__ == "__main__":
     # Example usage
     config = load_bash_config('script_constants.sh') #Dont detect all the variables
     N_EXECUTIONS = config['N_EXECUTIONS']
-    ALGORITHMS = config['ALGORITHMS']
+    # ALGORITHMS = config['ALGORITHMS']
+    ALGORITHMS = ['SMSEMOA']
 
-    # input_file = "data/solutions/ntw_722_050-050-025_C/obj_distance-occ_variance-pw_consumption/Replicas050/Genetics/NSGA2_1_100-100_SV0-CV2-MV1_MM0.2-MC0.1-MB0.1.txt"
-    network_file = "data/networks/ntw_722_050-050-025_C"  # You'll need to provide the correct network file path
+    middle_path__exp = "solutions/ntw_722_050-050-025_C/obj_distance-occ_variance-pw_consumption/Replicas050/Genetics"
+    network_file = "results/ga_singles/networks/ntw_722_050-050-025_C"  # You'll need to provide the correct network file path
     
+    
+    
+    
+
     for algorithm in ALGORITHMS:
         for seed2 in range(1,N_EXECUTIONS+1):
-            input_file = f"data_individualexp/{algorithm}_{seed2}_400-600_SV0-CV2-MV1_MM0.2-MC0.1-MB0.1.txt"
+            input_file = f"results/ga_singles/{middle_path__exp}/{algorithm}_{seed2}_400-600_SV0-CV2-MV1_MM0.2-MC0.1-MB0.1.txt"
             output_file = str(Path(input_file).with_suffix('.normalized.txt'))
             normalize_objectives(input_file, network_file, output_file)
             print(f"Normalized data written to: {output_file}") 

@@ -1,7 +1,7 @@
 import pandas as pd
 import numpy as np
 from utils import load_bash_config, load_data_normalized, load_data_hybrids
-
+from tqdm import tqdm
 
 def find_pareto_efficient_points(all_points):
     """
@@ -38,7 +38,7 @@ def find_pareto_efficient_points(all_points):
     pareto_mask = np.ones(len(points), dtype=bool)
     
     # Check each point against all others
-    for i in range(len(points)):
+    for i in tqdm(range(len(points))):
         for j in range(len(points)):
             if i != j:
                 # Check if point j dominates point i
@@ -57,60 +57,122 @@ def find_pareto_efficient_points(all_points):
 if __name__ == "__main__":
     # Example usage
     config = load_bash_config('script_constants.sh') #Dont detect all the variables
-    network_file = "data/networks/ntw_722_050-050-025_C"  # You'll need to provide the correct network file path
+    # network_file = "data/networks/ntw_722_050-050-025_C"  # You'll need to provide the correct network file path
 
-
+    middle_path__exp = "results/ga_singles/solutions/ntw_722_050-050-025_C/obj_distance-occ_variance-pw_consumption/Replicas050/Genetics"
+    network_file = "results/ga_singles/networks/ntw_722_050-050-025_C"  # You'll need to provide the correct network file path
+    
+    
+    # Control variable: "phase1", "phase2", or "allphases"
+    control = "phase1"  # Change this to control which phases to run
+    
     log_file = open("log_compute_unified_PF.log", "w")
 
     N_EXECUTIONS = config['N_EXECUTIONS']
-    ALGORITHMS = config['ALGORITHMS']
+    # ALGORITHMS = config['ALGORITHMS']
+    ALGORITHMS = ["NSGA2","NSGA3","UNSGA3","SMSEMOA"]
     LAST_GENERATION = config['N_GEN']
     POP_SIZE = config['POP_SIZE']
     HYBRID_POP_SIZE = config['HYBRID_POP_SIZE']
     HYBRID_N_GEN = config['HYBRID_N_GEN']
     N_GEN = config['N_GEN']
     
+    # Initialize variables
+    single_pareto_front = pd.DataFrame()
     
-    
-    all_points = []
-    for algorithm in ALGORITHMS:
-        for seed2 in range(1,N_EXECUTIONS+1):
-              print(f"Processing {algorithm}_{seed2}")
-              log_file.write(f"Processing {algorithm}_{seed2}\n")
-              input_file = f"data_individualexp/{algorithm}_{seed2}_{POP_SIZE}-{N_GEN}_SV0-CV2-MV1_MM0.2-MC0.1-MB0.1.normalized.txt"
-              df = load_data_normalized(input_file,config)
-              df = df[df["generation"] == LAST_GENERATION].loc[:, [algorithm] + [f"o{i+1}" for i in range(len(config['OBJECTIVES']))]]
-              print("\tAlgorithm: ",algorithm, "PF points: ", len(df))
-              log_file.write(f"\tAlgorithm: {algorithm}_{seed2} PF points: {len(df)}\n")
-              all_points.append(df) 
+    # Phase 1: Compute Pareto front from single algorithms only
+    if control in ["phase1", "allphases"]:
+        print("=== PHASE 1: Computing Pareto front from single algorithms ===")
+        log_file.write("=== PHASE 1: Computing Pareto front from single algorithms ===\n")
+        
+        single_algorithm_points = []
+        for algorithm in ALGORITHMS:
+            for seed2 in range(1,N_EXECUTIONS+1):
+                  print(f"Loading {algorithm}_{seed2}")
+                  log_file.write(f"Loading {algorithm}_{seed2}\n")
+                  input_file = f"{middle_path__exp}/{algorithm}_{seed2}_{POP_SIZE}-{N_GEN}_SV0-CV2-MV1_MM0.2-MC0.1-MB0.1.normalized.txt"
+                  df = load_data_normalized(input_file,config)
+                  df = df[df["generation"] == LAST_GENERATION].loc[:, [f"o{i+1}" for i in range(len(config['OBJECTIVES']))]]
+                  df["algorithm"] = algorithm
+                  print("\tAlgorithm: ",algorithm, "PF points: ", len(df))
+                  log_file.write(f"\tAlgorithm: {algorithm}_{seed2} PF points: {len(df)}\n")
+                  single_algorithm_points.append(df) 
 
-    for algorithm in config['HYBRID_ALGORITHMS']:
-        for seed2 in range(1,N_EXECUTIONS+1):
-            print(f"Processing Hybrid {algorithm}_{seed2}")
-            input_file = f"data_individualexp/hybrids/{algorithm}_{seed2}_{HYBRID_POP_SIZE}-{HYBRID_N_GEN}_SV0-CV2-MV1_MM0.2-MC0.1-MB0.1.txt"
-            df = load_data_hybrids(input_file,config)
-            df = df[(df["generation"] == LAST_GENERATION) & (df["pf"] == 1)].loc[:, [algorithm] + [f"o{i+1}" for i in range(len(config['OBJECTIVES']))]]
-            print("\tBase Algorithm: ",algorithm, "Hybrid  PF points: ", len(df))
-            log_file.write(f"\tBase Algorithm: {algorithm}_{seed2} Hybrid PF points: {len(df)}\n")
-            all_points.append(df)
+        # Find Pareto front from single algorithms
+        print("Joining single algorithm points")
+        log_file.write("Joining single algorithm points\n")
+        single_pareto_front = find_pareto_efficient_points(single_algorithm_points)
+        
+        print(f"Single algorithm points processed: {sum(len(df) for df in single_algorithm_points)}")
+        log_file.write(f"Single algorithm points processed: {sum(len(df) for df in single_algorithm_points)}\n")
+        print(f"Single algorithm Pareto efficient points found: {len(single_pareto_front)}")
+        log_file.write(f"Single algorithm Pareto efficient points found: {len(single_pareto_front)}\n")
+        
+        # Save single algorithm Pareto front
+        if not single_pareto_front.empty:
+            single_output_file = "pareto_front_single_algorithms.txt"
+            single_pareto_front.to_csv(single_output_file, index=False, sep='\t')
+            log_file.write(f"Single algorithm Pareto front saved to: {single_output_file}\n")
+            print(f"Single algorithm Pareto front saved to: {single_output_file}")
+        else:
+            print("No single algorithm Pareto efficient points found.")
+            log_file.write("No single algorithm Pareto efficient points found.\n")
+    
+    # Phase 2: Compute Pareto front from hybrids and join with single algorithms
+    if control in ["phase2", "allphases"]:
+        print("\n=== PHASE 2: Computing Pareto front from hybrids and joining with single algorithms ===")
+        log_file.write("\n=== PHASE 2: Computing Pareto front from hybrids and joining with single algorithms ===\n")
+        
+        # If running only phase2, load the single algorithm Pareto front
+        if control == "phase2" and single_pareto_front.empty:
+            try:
+                single_pareto_front = pd.read_csv("pareto_front_single_algorithms.txt", sep='\t')
+                print("Loaded single algorithm Pareto front from file")
+                log_file.write("Loaded single algorithm Pareto front from file\n")
+            except FileNotFoundError:
+                print("Warning: pareto_front_single_algorithms.txt not found. Running phase2 without single algorithm data.")
+                log_file.write("Warning: pareto_front_single_algorithms.txt not found. Running phase2 without single algorithm data.\n")
+                single_pareto_front = pd.DataFrame()
+        
+        hybrid_points = []
+        for algorithm in config['HYBRID_ALGORITHMS']:
+            for seed2 in range(1,N_EXECUTIONS+1):
+                print(f"Processing Hybrid {algorithm}_{seed2}")
+                input_file = f"data_individualexp/hybrids/{algorithm}_{seed2}_{HYBRID_POP_SIZE}-{HYBRID_N_GEN}_SV0-CV2-MV1_MM0.2-MC0.1-MB0.1.txt"
+                df = load_data_hybrids(input_file,config)
+                df = df[(df["generation"] == LAST_GENERATION) & (df["pf"] == 1)].loc[:, [algorithm] + [f"o{i+1}" for i in range(len(config['OBJECTIVES']))]]
+                print("\tBase Algorithm: ",algorithm, "Hybrid  PF points: ", len(df))
+                log_file.write(f"\tBase Algorithm: {algorithm}_{seed2} Hybrid PF points: {len(df)}\n")
+                hybrid_points.append(df)
 
-    # Find all Pareto efficient points
-    pareto_front = find_pareto_efficient_points(all_points)
-    
-    print(f"Total points processed: {sum(len(df) for df in all_points)}")
-    log_file.write(f"Total points processed: {sum(len(df) for df in all_points)}\n")
-    print(f"Pareto efficient points found: {len(pareto_front)}")
-    log_file.write(f"Pareto efficient points found: {len(pareto_front)}\n")
-    
-    if not pareto_front.empty:
-        # Save Pareto front to file
-        output_file = "pareto_front.txt"
-        pareto_front.to_csv(output_file, index=False, sep='\t')
-        log_file.write(f"\nPareto front saved to: {output_file}\n")
-        print(f"\nPareto front saved to: {output_file}")
-    else:
-        print("No Pareto efficient points found.")
-        log_file.write("No Pareto efficient points found.\n")
+        # Combine single algorithm Pareto front with hybrid points
+        all_points_phase2 = [single_pareto_front] + hybrid_points
+        
+        # Find final Pareto front from combined data
+        final_pareto_front = find_pareto_efficient_points(all_points_phase2)
+        
+        print(f"Hybrid points processed: {sum(len(df) for df in hybrid_points)}")
+        log_file.write(f"Hybrid points processed: {sum(len(df) for df in hybrid_points)}\n")
+        print(f"Total points in Phase 2: {len(single_pareto_front) + sum(len(df) for df in hybrid_points)}")
+        log_file.write(f"Total points in Phase 2: {len(single_pareto_front) + sum(len(df) for df in hybrid_points)}\n")
+        print(f"Final Pareto efficient points found: {len(final_pareto_front)}")
+        log_file.write(f"Final Pareto efficient points found: {len(final_pareto_front)}\n")
+        
+        # Save final Pareto front
+        if not final_pareto_front.empty:
+            final_output_file = "pareto_front_final.txt"
+            final_pareto_front.to_csv(final_output_file, index=False, sep='\t')
+            log_file.write(f"Final Pareto front saved to: {final_output_file}\n")
+            print(f"Final Pareto front saved to: {final_output_file}")
+            
+            # Also save as the original output file name for compatibility
+            output_file = "pareto_front.txt"
+            final_pareto_front.to_csv(output_file, index=False, sep='\t')
+            log_file.write(f"Pareto front also saved to: {output_file}\n")
+            print(f"Pareto front also saved to: {output_file}")
+        else:
+            print("No final Pareto efficient points found.")
+            log_file.write("No final Pareto efficient points found.\n")
 
     log_file.close()
     

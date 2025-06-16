@@ -86,7 +86,7 @@ paralel_solve_seed() {
 
 paralel_hybrid_solve_seed() {
     # Run each seed execution sequentially
-    for SEED2 in $(seq 1 1 $N_EXECUTIONS); do
+    for SEED2 in $(seq $N_EXECUTIONS -1 1); do
         echo "    Running hybrid_solve with seed $SEED2"
         hybrid_solve
     done
@@ -135,7 +135,7 @@ USERS=25
 SEED2=1
 N_EXECUTIONS=30
 
-#generate
+generate
 paralel_hybrid_solve_seed
 # get_csv_hybrid
 
