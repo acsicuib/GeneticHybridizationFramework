@@ -17,3 +17,4 @@ results/*
 *.txt
 *.log
 visualization.html
+check_status.sh
