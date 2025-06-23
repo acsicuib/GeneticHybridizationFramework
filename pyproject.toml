@@ -14,5 +14,7 @@ dependencies = [
     "pymoo>=0.6.1.5",
     "pyvista>=0.45.2",
     "seaborn>=0.13.2",
+    "statsmodels>=0.14.4",
     "tqdm>=4.67.1",
+    "wrapt>=1.17.2",
 ]

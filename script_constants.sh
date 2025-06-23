@@ -60,13 +60,15 @@ SEED2=1
 ###
 ### FOR HYBRIDS
 ###
-HYBRID_POP_SIZE=100
+HYBRID_POP_SIZE=400
 HYBRID_N_GEN=500
 
 
 # HYBRID_GEN_STEPS=(25 50 75)
 GEN_STEP=3
-HYBRID_GEN_STEPS=(25 50 75 100 125 150 175 200 225 250 275 300 325 350 375 400 425 450 475)
+# HYBRID_GEN_STEPS=(25 50 75 100 125 150 175 200 225 250 275 300 325 350 375 400 425 450 475)
+# HYBRID_GEN_STEPS=(50 100 150 200 250 300 350 400 450 )
+HYBRID_GEN_STEPS=(100 200 300 400)
 HYBRID_ALGORITHMS=('NSGA2' 'NSGA3' 'UNSGA3' 'SMSEMOA')
 # HYBRID_ALGORITHMS=('NSGA2'  'SMSEMOA')
 # HYBRID_ALGORITHMS=('NSGA2' 'CTAEA' )
@@ -80,7 +82,7 @@ HYBRID_SOL_DUMPING_ALL="$(python3 -c "print(
             ] for _ in range(${#HYBRID_GEN_STEPS[@]})
         ]
     )")"
-echo $HYBRID_SOL_DUMPING_ALL
+# echo $HYBRID_SOL_DUMPING_ALL
 # MYHYBRID_SOL_DUMPING="[[[1,1],[1,1]],[[1,0],[1,1]],[[1,1],[1,1]]]"
 # echo $MYHYBRID_SOL_DUMPING
 
@@ -93,7 +95,29 @@ HYBRID_SOL_DUMPING_NONE="$(python3 -c "print(
             ] for _ in range(${#HYBRID_GEN_STEPS[@]})
         ]
     )")"
+
+# Only SMSEMOA does the exchange, others do not
+HYBRID_SOL_DUMPING_CUSTOM="$(
+python3 -c "
+alg_count = ${#HYBRID_ALGORITHMS[@]}
+step_count = ${#HYBRID_GEN_STEPS[@]}
+smsemoa_idx = 3
+print([
+    [
+        [
+            1 if i == smsemoa_idx and j != smsemoa_idx else 0
+            for j in range(alg_count)
+        ]
+        for i in range(alg_count)
+    ]
+    for _ in range(step_count)
+])
+"
+)"
+
+# HYBRID_SOL_DUMPING="$HYBRID_SOL_DUMPING_CUSTOM"
 HYBRID_SOL_DUMPING="$HYBRID_SOL_DUMPING_ALL"
+echo $HYBRID_SOL_DUMPING
 # HYBRID_SOL_DUMPING="$MYHYBRID_SOL_DUMPING"
 
 HYBRID_TABLE_GEN_STEPS=(1 $(seq 5 5 $((HYBRID_N_GEN - 1))) $HYBRID_N_GEN)

@@ -4,9 +4,19 @@ data/*
 deprecated/*
 *.gz
 .DS_Store
-resopt/analysis/__pycache__/
-resopt/problem/__pycache__/
+resopt/analysis/__pycache__/*
+resopt/problem/__pycache__/*
+resopt/files/__pycache__/*
 *.pyc
+__pycache__/*
+*.pyc.1
+*.pyc.2
+*.pyc.3
+*.pyc.4
+*.pyc.5
+*.pyc.6
+*.pyc.7
+*.pyc.8
 *.pyo
 *.pyd
 *.pyw
@@ -18,3 +28,4 @@ results/*
 *.log
 visualization.html
 check_status.sh
+download_results*.sh

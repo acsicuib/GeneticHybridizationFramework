@@ -77,31 +77,29 @@ def load_bash_config(bash_script_path):
 
 def load_data_normalized(input_file,config):
     if not os.path.exists(input_file):
-        print(f"File does not exist: {input_file}")
-        sys.exit(-1)
-
+        raise FileNotFoundError(f"File does not exist: {input_file}")
     columns = ["date", "time", "generation"] 
     columns += [f"o{i+1}" for i,_ in enumerate(config['OBJECTIVES'])]
- 
     df = pd.read_csv(input_file,sep=" ",header=None)
-    # df.drop(columns=[len(df.columns)-1],inplace=True) #WITH NORMALIZED FILES 
     df.columns = columns
     return df
 
-def load_data_hybrids(input_file,config,seq = 97):
+def load_data_merged_hybrids(input_file):
     if not os.path.exists(input_file):
-        print(f"File does not exist: {input_file}")
-        sys.exit(-1)
+        raise FileNotFoundError(f"File does not exist: {input_file}")
+    df = pd.read_csv(input_file,sep=",")
+    return df
 
-    pairs = [f"tt{i}" for i in range(seq)] ## 97 depends on sequence and number of hybrids
+def load_data_hybrids(input_file,config,seq = 77):
+    if not os.path.exists(input_file):
+        raise FileNotFoundError(f"File does not exist: {input_file}")
     columns = ["date", "time", "pf","generation"] 
     columns += [f"o{i+1}" for i,_ in enumerate(config['OBJECTIVES'])]
+    pairs = [f"tt{i}" for i in range(seq)]
     columns += pairs    
- 
     df = pd.read_csv(input_file,sep=" ",header=None)
     df.columns = columns
     return df
-
 
 if __name__ == "__main__":
     # Get the path to script_constants.sh

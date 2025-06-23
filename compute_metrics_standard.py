@@ -16,15 +16,21 @@ if __name__ == "__main__":
     middle_path_sol_exp = "results/ga_singles/solutions/ntw_722_050-050-025_C/obj_distance-occ_variance-pw_consumption/Replicas050/Genetics/"
     file = "{algorithm}_{seed}_{POP_SIZE}-{N_GEN}_SV0-CV2-MV1_MM0.2-MC0.1-MB0.1.normalized.txt"
     output_path = "results/"
+    output_path = "results_100/"
+    output_path = "results_imperium/"
 
     POP_SIZE = config['POP_SIZE']
     N_GEN = config['N_GEN']
     HYBRID_N_GEN = config['HYBRID_N_GEN']
     N_EXECUTIONS = config['N_EXECUTIONS']
+    N_EXECUTIONS = 1
     N_OBJECTIVES = len(config['OBJECTIVES'])
     ALGORITHMS = config['ALGORITHMS']
     CUT_GENERATION = 500
 
+    print("--------------------------------")
+    print("Available algorithms: ", ALGORITHMS)
+    print("--------------------------------")
     INDICATORS = {
         'GD': GD,
         'IGD': IGD,
@@ -33,24 +39,25 @@ if __name__ == "__main__":
         'STE': STE
     }
     
-    # Load Pareto front
-    if os.path.exists(output_path+"pareto_front_exp.txt"):
-        reference_points = pd.read_csv(output_path+"pareto_front_exp.txt", sep="\t")
+    # Load Reference points 
+    if os.path.exists(output_path+"reference_points.txt"):
+        reference_points = pd.read_csv(output_path+"reference_points.txt", sep="\t")
         reference_points = reference_points.loc[:, [f"o{i+1}" for i in range(N_OBJECTIVES)]]
         reference_points = reference_points.values
     else:
-        sys.exit("Pareto front file not found")
-    print("Length of Pareto front: ", len(reference_points))
-    print(reference_points)
+        sys.exit("Reference points file not found")
+    print("Length of Reference points: ", len(reference_points))
+    # print(reference_points)
 
 
     #Clean the output file
     if os.path.exists(output_path+f"table_standard_{POP_SIZE}_{N_GEN}.csv"):
+        print(f"Cleaning the previous file: {output_path+f'table_standard_{POP_SIZE}_{N_GEN}.csv'}")
         os.remove(output_path+f"table_standard_{POP_SIZE}_{N_GEN}.csv")
 
     for algorithm in ALGORITHMS:
+        print(f"Processing {algorithm}")
         for replica in tqdm(range(1,N_EXECUTIONS+1)):
-            tqdm.write(f"Processing {algorithm} {replica}")
             input_file = middle_path_sol_exp + file.format(algorithm=algorithm,seed=replica,POP_SIZE=POP_SIZE,N_GEN=N_GEN)
             df = load_data_normalized(input_file,config)
             df["datatime"] = df.apply(lambda x: datetime.strptime(x["date"] + " " + x["time"], '%Y-%m-%d %H:%M:%S.%f'), axis=1)
@@ -68,11 +75,10 @@ if __name__ == "__main__":
             seq[0] = 1
 
             for gen in seq:
-                pre_gen = gen-1
-                if pre_gen <= 0:#Merging all algorithm this non have sense
+                if gen-1 == 0:#Merging all algorithm this non have sense
                     start_time = df.loc[df['generation'] == 1, 'datatime'].min()
                 else:
-                    start_time = df.loc[df['generation'] == pre_gen, 'datatime'].min()
+                    start_time = df.loc[df['generation'] == gen-1, 'datatime'].min()
                 
                 pop_value_rows.append(len(df.loc[df['generation'] == gen]))
                 gen_value_rows.append(gen)  
@@ -100,22 +106,23 @@ if __name__ == "__main__":
                     solution = ind(dft[['o1', 'o2', 'o3']].values)
                     # print(solution)
                     metrics_dict[name].append(solution)
+            
+            ## When we analyse the whole file, we store the results
+            df_dict = {
+                'Algorithm': alg_name_rows,
+                'Seed': execution_rows,
+                'Population': pop_value_rows,
+                'Generation': gen_value_rows,
+                'Solutions': n_sol_list,
+                'TimeDelta': td_list}
 
-                df_dict = {
-                    'Algorithm': alg_name_rows,
-                    'Seed': execution_rows,
-                    'Population': pop_value_rows,
-                    'Generation': gen_value_rows,
-                    'Solutions': n_sol_list,
-                    'TimeDelta': td_list}
+            df_dict.update(metrics_dict)
 
-                df_dict.update(metrics_dict)
-
-                do = pd.DataFrame(df_dict)
-                # Check if file exists to determine if we need to write header
-                file_exists = os.path.exists(output_path+f"table_standard_{POP_SIZE}_{N_GEN}.csv")
-                do.to_csv(output_path+f"table_standard_{POP_SIZE}_{N_GEN}.csv", 
-                         mode='a',  # append mode
-                         header=not file_exists,  # write header only if file doesn't exist
-                         index=False)
+            do = pd.DataFrame(df_dict)
+            # Check if file exists to determine if we need to write header
+            file_exists = os.path.exists(output_path+f"table_standard_{POP_SIZE}_{N_GEN}.csv")
+            do.to_csv(output_path+f"table_standard_{POP_SIZE}_{N_GEN}.csv", 
+                        mode='a',  # append mode
+                        header=not file_exists,  # write header only if file doesn't exist
+                        index=False)
                 

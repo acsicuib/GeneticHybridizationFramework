@@ -4,7 +4,7 @@ source script_constants.sh
 source script_functions.sh
 
 
-EXP_NAME="exp1"
+EXP_NAME="exp_XL"
 # ==============================================================================
 # PROGRAM
 # ==============================================================================
@@ -86,7 +86,7 @@ paralel_solve_seed() {
 
 paralel_hybrid_solve_seed() {
     # Run each seed execution sequentially
-    for SEED2 in $(seq 1 1 12); do
+    for SEED2 in $(seq 1 1 3); do
         echo "    Running hybrid_solve with seed $SEED2"
         hybrid_solve
     done
@@ -145,6 +145,3 @@ paralel_hybrid_solve_seed
 #POP_SIZE=300
 # arrange_all
 #solution_to_ref_points 0.9
-
-
-
