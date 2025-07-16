@@ -22,8 +22,9 @@ if __name__ == "__main__":
     # N_EXECUTIONS = 1        
     # SEQ_HYBRIDS = 37
     SEQ_HYBRIDS = 17
-    results_path = "results_hybrid_400_500/"
-    N_EXECUTIONS = 3      
+    # results_path = "results_hybrid_400_500/"
+    results_path = "results/"
+    N_EXECUTIONS = 30      
 
     path_exp_hybrids = results_path+"hybridization/"
     file_hybrids = path_exp_hybrids+"{algorithm}_{replica}_{HYBRID_POP_SIZE}-{HYBRID_N_GEN}_SV0-CV2-MV1_MM0.2-MC0.1-MB0.1.txt"
