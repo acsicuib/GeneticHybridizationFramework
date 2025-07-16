@@ -58,7 +58,10 @@ if __name__ == "__main__":
     N_EXECUTIONS  = 3
     
 
-
+    SEQ_HYBRIDS = 17 #TODO: change this considering the number of sequence exchange in the hybridization
+    results_path = "results/"
+    N_EXECUTIONS  = 30
+    
 
     INDICATORS = {
         'GD': GD,

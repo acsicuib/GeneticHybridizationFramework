@@ -16,15 +16,15 @@ if __name__ == "__main__":
     middle_path_sol_exp = "results/ga_singles/solutions/ntw_722_050-050-025_C/obj_distance-occ_variance-pw_consumption/Replicas050/Genetics/"
     file = "{algorithm}_{seed}_{POP_SIZE}-{N_GEN}_SV0-CV2-MV1_MM0.2-MC0.1-MB0.1.normalized.txt"
     output_path = "results/"
-    output_path = "results_100/"
-    output_path = "results_imperium/"
-    output_path = "results_hybrid_400_500/"
+    # output_path = "results_100/"
+    # output_path = "results_imperium/"
+    # output_path = "results_hybrid_400_500/"
 
     POP_SIZE = config['POP_SIZE']
     N_GEN = config['N_GEN']
     HYBRID_N_GEN = config['HYBRID_N_GEN']
     N_EXECUTIONS = config['N_EXECUTIONS']
-    N_EXECUTIONS = 3
+    N_EXECUTIONS = 30
     N_OBJECTIVES = len(config['OBJECTIVES'])
     ALGORITHMS = config['ALGORITHMS']
     CUT_GENERATION = 500
