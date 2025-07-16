@@ -34,8 +34,11 @@ or run Hybrids configurations
 ```
 
 Compute reference points, compare single and hybrids results and plot
+Situacion actual en cloudlab /results: 
 ```bash
-uv run compute_unified_PF.py
+uv run compute_unified_PF.py --control single ## subido al servidor
+uv run compute_unified_PF.py --control hybrids ### Ejecutando este punto en el servidor con las 30 replicas
+uv run compute_unified_PF.py --control merge 
 uv run compute_indicator.py
 ```
 ## Directory Structure

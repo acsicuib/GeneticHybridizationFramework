@@ -82,8 +82,8 @@ if __name__ == "__main__":
     # experiment_path2 = "results_hybrid_400_500"
     # exp_hybridization = "results_hybrid_400_500/hybridization"
 
-    # single_output_file = experiment_path2 + "/reference_points_single_algorithms.txt"
-    # hybrid_output_file = exp_hybridization + "/reference_points_hybrids.txt"
+    single_output_file = experiment_path + "/reference_points_single_algorithms.txt"
+    hybrid_output_file = exp_hybridization + "/reference_points_hybrids.txt"
     final_output_file = experiment_path + "/reference_points.txt"  
 
     # Control variable: "singles", "hybrids", "merge"
