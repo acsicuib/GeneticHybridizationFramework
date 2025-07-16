@@ -116,7 +116,7 @@ if __name__ == "__main__":
     HYBRID_N_GEN = config['HYBRID_N_GEN']
     N_GEN = config['N_GEN']
     # TMP
-    N_EXECUTIONS = 30
+    
 
     SEQ_HYBRIDS = 77 #TODO: change this considering the number of sequence exchange in the hybridization
     
@@ -127,7 +127,7 @@ if __name__ == "__main__":
     SEQ_HYBRIDS = 17 #TMP
 
     # SEQ_HYBRIDS = 37
-    N_EXECUTIONS = 3  
+    N_EXECUTIONS = 30 
     ##
 
     # Initialize variables
