@@ -9,7 +9,7 @@ import seaborn as sns
 import os
 import sys
 import imageio.v3 as iio  # Add this import at the top
-from utils import load_data, load_data_normalized, load_data_hybrids
+from utils import load_data_normalized, load_data_hybrids
 
 config = load_bash_config('script_constants.sh') #Dont detect all the variables
 

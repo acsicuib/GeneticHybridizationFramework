@@ -34,8 +34,8 @@ def find_pareto_efficient_points(all_points):
     # Get objective column names
     obj_columns = [col for col in combined_df.columns if col.startswith('o')]
     
-    # Get algorithm column name (should be the first column that's not an objective)
-    algorithm_column = [col for col in combined_df.columns if not col.startswith('o')][0]
+    # # Get algorithm column name (should be the first column that's not an objective)
+    # algorithm_column = [col for col in combined_df.columns if not col.startswith('o')][0]
     
     # Convert to numpy array for faster computation (only objectives)
     points = combined_df[obj_columns].values
@@ -73,15 +73,18 @@ if __name__ == "__main__":
     network_file = exp_singles + "/networks/ntw_722_050-050-025_C"  # You'll need to provide the correct network file path
 
     ## TMP
-    experiment_path2 = "results_100"
-    exp_hybridization  = "results_100/hybridization"
+    # experiment_path2 = "results_100"
+    # exp_hybridization  = "results_100/hybridization"
 
-    experiment_path2 = "results_imperium"
-    exp_hybridization = "results_imperium/hybridization"
+    # experiment_path2 = "results_imperium"
+    # exp_hybridization = "results_imperium/hybridization"
+    
+    # experiment_path2 = "results_hybrid_400_500"
+    # exp_hybridization = "results_hybrid_400_500/hybridization"
 
-    single_output_file = experiment_path2 + "/reference_points_single_algorithms.txt"
-    hybrid_output_file = exp_hybridization + "/reference_points_hybrids.txt"
-    final_output_file = experiment_path2 + "/reference_points.txt"  
+    # single_output_file = experiment_path2 + "/reference_points_single_algorithms.txt"
+    # hybrid_output_file = exp_hybridization + "/reference_points_hybrids.txt"
+    final_output_file = experiment_path + "/reference_points.txt"  
 
     # Control variable: "singles", "hybrids", "merge"
     # Get this value from argparse
@@ -113,7 +116,7 @@ if __name__ == "__main__":
     HYBRID_N_GEN = config['HYBRID_N_GEN']
     N_GEN = config['N_GEN']
     # TMP
-    N_EXECUTIONS = 1
+    N_EXECUTIONS = 3
 
     SEQ_HYBRIDS = 77 #TODO: change this considering the number of sequence exchange in the hybridization
     
@@ -123,9 +126,8 @@ if __name__ == "__main__":
     
     SEQ_HYBRIDS = 17 #TMP
 
-    SEQ_HYBRIDS = 37
-    
-    N_EXECUTIONS = 1  
+    # SEQ_HYBRIDS = 37
+    N_EXECUTIONS = 3  
     ##
 
     # Initialize variables
@@ -145,6 +147,7 @@ if __name__ == "__main__":
                   df = load_data_normalized(input_file,config)
                   df = df[df["generation"] == CUT_GENERATION].loc[:, [f"o{i+1}" for i in range(len(config['OBJECTIVES']))]]
                   df["algorithm"] = algorithm
+                  df["seed"] = seed2
                   print("\tAlgorithm: ",algorithm, "PF points: ", len(df))
                   log_file.write(f"\tAlgorithm: {algorithm}_{seed2} PF points: {len(df)}\n")
                   single_algorithm_points.append(df) 
@@ -184,6 +187,7 @@ if __name__ == "__main__":
                 df = load_data_hybrids(input_file,config,seq=SEQ_HYBRIDS)
                 df = df[(df["generation"] == CUT_GENERATION) & (df["pf"] == 1)].loc[:,[f"o{i+1}" for i in range(len(config['OBJECTIVES']))]]
                 df["algorithm"] = f"h_{algorithm}"
+                df["seed"] = seed2
                 print("\tBase Algorithm: ",algorithm, "Hybrid  PF points: ", len(df))
                 log_file.write(f"\tBase Algorithm: {algorithm}_{seed2} Hybrid PF points: {len(df)}\n")
                 hybrid_points.append(df)

@@ -18,12 +18,13 @@ if __name__ == "__main__":
     output_path = "results/"
     output_path = "results_100/"
     output_path = "results_imperium/"
+    output_path = "results_hybrid_400_500/"
 
     POP_SIZE = config['POP_SIZE']
     N_GEN = config['N_GEN']
     HYBRID_N_GEN = config['HYBRID_N_GEN']
     N_EXECUTIONS = config['N_EXECUTIONS']
-    N_EXECUTIONS = 1
+    N_EXECUTIONS = 3
     N_OBJECTIVES = len(config['OBJECTIVES'])
     ALGORITHMS = config['ALGORITHMS']
     CUT_GENERATION = 500

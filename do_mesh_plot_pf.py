@@ -4,27 +4,34 @@ from scipy.spatial import Voronoi
 import pyvista as pv
 import os
 
-path_reference_points = "results/all_reference_points.txt"
+path_reference_points = "results_hybrid_400_500/reference_points.txt"
 
 # Load all datasets
 df_pareto = pd.read_csv(path_reference_points,sep="\t")
-columns = [f"o{i+1}" for i,_ in enumerate(range(3))] + ["algorithm"]
+columns = [f"o{i+1}" for i,_ in enumerate(range(3))] + ["algorithm"] + ["replica"]
 df_pareto.columns = columns
 
 custom_colors = ['#ff8500', '#FF595E', '#1982C4', '#6A4C93', "#8AC926"]
-algorithms = ["NSGA2","NSGA3","UNSGA3","SMSEMOA","Hybrids"]
+algorithms = df_pareto["algorithm"].unique()
+
 
 # === Crear escena en PyVista ===
 plotter = pv.Plotter()
 
 # Add Pareto front points for each algorithm
 for ix,algorithm in enumerate(algorithms):
+    if algorithm.startswith("h_"):
+        algorithm_label = "Hybrids"
+        ix_color = len(custom_colors)-1
+    else:
+        algorithm_label = algorithm
+        ix_color = ix
     algorithm_points = df_pareto[df_pareto['algorithm'] == algorithm][['o1', 'o2', 'o3']].values
     
     # Create spheres for each point
     for i, point in enumerate(algorithm_points):
         sphere = pv.Sphere(radius=0.002, center=point)
-        plotter.add_mesh(sphere, label=algorithm, color = custom_colors[ix])
+        plotter.add_mesh(sphere, label=algorithm_label, color = custom_colors[ix_color])
 
 # Add legend with supported parameters
 plotter.add_legend(

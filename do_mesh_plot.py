@@ -5,50 +5,22 @@ import pyvista as pv
 from scipy.spatial.distance import pdist, squareform
 import os
 from do_algorithms_plot import custom_colors,custom_colors_hybrids
-path_exp = "data_individualexp/"
+import matplotlib.pyplot as plt
+from utils import load_data_normalized, load_data_merged_hybrids
+
+path_exp = "results_hybrid_400_500/"
 file = "{algorithm}_{replica}_400-600_SV0-CV2-MV1_MM0.2-MC0.1-MB0.1.normalized.txt"
 ALGORITHMS = ['NSGA2',"NSGA3","UNSGA3","SMSEMOA"]
 replica = 1
 
-path_exp_hybrids = "data_individualexp/hybrids/"
-file_hybrids = "{algorithm}_{replica}_100-600_SV0-CV2-MV1_MM0.2-MC0.1-MB0.1.txt"
+path_exp_hybrids = "results_hybrid_400_500/hybrids/"
+file_hybrids =path_exp_hybrids+ "{algorithm}_{replica}_100-600_SV0-CV2-MV1_MM0.2-MC0.1-MB0.1.txt"
 based_hybrid = ['NSGA2',"NSGA3","UNSGA3","SMSEMOA"]
 
 
-def load_data(path_exp,file,replica):
-    columns = ["date", "time", "generation"] 
-    columns += [f"o{i+1}" for i,_ in enumerate(range(3))]
-    columns += ["algorithm"]
- 
-    df_all = pd.DataFrame()
-    for algorithm in ALGORITHMS:
-        df = pd.read_csv(path_exp + file.format(algorithm=algorithm,replica=replica),sep=" ",header=None)
-        # df.drop(columns=[len(df.columns)-1],inplace=True) #WITH NORMALIZED FILES 
-        df["algorithm"] = algorithm
-        df_all = pd.concat([df_all,df])
-
-    df_all.columns = columns
-    return df_all
-
-def load_data_hybrids(path_exp,file_hybrids,replica=1):
-    pairs = [f"tt{i}" for i in range(97)]
-    columns = ["date", "time", "pf","generation"] 
-    columns += [f"o{i+1}" for i,_ in enumerate(range(3))]
-    columns += pairs    
- 
-    df_hybrids = pd.DataFrame()
-    for algorithm in based_hybrid:
-        df = pd.read_csv(path_exp + file_hybrids.format(algorithm=algorithm,replica=replica),sep=" ",header=None)
-        df_hybrids = pd.concat([df_hybrids,df])
-    # print(len(df.columns))
-    # df.drop(columns=[len(df.columns)-1],inplace=True) #WITH NORMALIZED FILES 
-    df_hybrids.columns = columns
-    return df_hybrids   
-
-
 # Load both datasets
-df_original = load_data(path_exp, file, replica)
-df_hybrids = load_data_hybrids(path_exp_hybrids, file_hybrids)
+df_original = load_data_normalized(path_exp, file, replica)
+df_hybrids = load_data_merged_hybrids(file_hybrids)
 
 # Filter for generation 600
 df_original = df_original.loc[df_original["generation"] == 600].copy()

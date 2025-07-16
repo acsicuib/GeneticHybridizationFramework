@@ -53,6 +53,12 @@ if __name__ == "__main__":
     N_EXECUTIONS  = 1
     
 
+    SEQ_HYBRIDS = 17 #TODO: change this considering the number of sequence exchange in the hybridization
+    results_path = "results_hybrid_400_500/"
+    N_EXECUTIONS  = 3
+    
+
+
 
     INDICATORS = {
         'GD': GD,
@@ -90,7 +96,7 @@ if __name__ == "__main__":
                 df = load_data_merged_hybrids(input_file)
                 df_all = pd.concat([df_all, df])
             except:
-                # print(f"\t\tFile does not exist: {input_file}")
+                print(f"\t\tFile does not exist: {input_file}")
                 df_all = pd.DataFrame()
                 continue
                 

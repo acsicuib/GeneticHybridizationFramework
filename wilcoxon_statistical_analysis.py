@@ -741,6 +741,12 @@ def main():
     output_path = "results_imperium/"
     N_EXECUTIONS = 1
 
+    path_results = "results_hybrid_400_500/"
+    output_path = "results_hybrid_400_500/"
+    N_EXECUTIONS = 3
+
+
+
     # Load standard algorithms data
     standard_file = path_results+f"table_standard_{config['POP_SIZE']}_{config['N_GEN']}.csv" #Note: they are computed until CUT_GENERATION
     hybrid_file = path_results+f"table_hybrids_{config['HYBRID_POP_SIZE']}_{config['HYBRID_N_GEN']}.csv"
