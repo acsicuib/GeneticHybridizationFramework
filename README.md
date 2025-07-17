@@ -38,9 +38,10 @@ Situacion actual en cloudlab /results:
 ```bash
 uv run compute_unified_PF.py --control single 
 uv run compute_unified_PF.py --control hybrids 
-uv run compute_unified_PF.py --control merge ### Ejecutando este punto en el servidor con las 30 replicas
+uv run compute_unified_PF.py --control merge 
+uv run merge_hybridization_cases.py ### Ejecutando este punto en el servidor con las 30 replicas
 uv run compute_metrics_hybridization.py
-uv run compute_metrics_standard.py
+uv run compute_metrics_standard.py #Ejecutando en local
 ```
 ## Directory Structure
 - resopt/ – Core optimization, problem definitions, and plotting modules.

@@ -57,7 +57,7 @@ if __name__ == "__main__":
     results_path = "results_hybrid_400_500/"
     N_EXECUTIONS  = 3
     
-
+    # Hybrid_9_1600_500.txt 
     SEQ_HYBRIDS = 17 #TODO: change this considering the number of sequence exchange in the hybridization
     results_path = "results/"
     N_EXECUTIONS  = 30
@@ -71,7 +71,7 @@ if __name__ == "__main__":
         'STE': STE
     }
     path_exp_hybrids = results_path+"hybridization/"
-    file_hybrids = path_exp_hybrids+"{algorithm}_{replica}_400_{HYBRID_N_GEN}.txt"
+    file_hybrids = path_exp_hybrids+"{algorithm}_{replica}_1600_{HYBRID_N_GEN}.txt"
     based_hybrid = config['HYBRID_ALGORITHMS']
 
     # Load Reference points 
