@@ -7,9 +7,9 @@ import os
 def save_plot(fig, filename, dpi=300, bbox_inches='tight'):
     """Save the plot to a file with high resolution"""
     # Create plots directory if it doesn't exist
-    os.makedirs('plots', exist_ok=True)
+    os.makedirs(f'{results_path}/plots', exist_ok=True)
     # Save the plot
-    fig.savefig(f'plots/{filename}.png', dpi=dpi, bbox_inches=bbox_inches)
+    fig.savefig(f'{results_path}/plots/{filename}.png', dpi=dpi, bbox_inches=bbox_inches)
     plt.close(fig)  # Close the figure to free memory
 
 def plot_metrics_time_series(file_metrics,file_hybrids=None):
@@ -115,12 +115,13 @@ def plot_metrics_time_series(file_metrics,file_hybrids=None):
         # Customize tick labels
         ax.tick_params(axis='both', which='major', labelsize=9)
         
-        # Add metric name as text in the top-left corner
-        ax.text(0.02, 0.95, metric, 
+        # Add metric name as text in the top-right corner
+        ax.text(0.98, 0.95, metric, 
                 transform=ax.transAxes,
                 fontsize=12,
                 fontweight='bold',
-                verticalalignment='top')
+                verticalalignment='top',
+                horizontalalignment='right')
     
     # Add a single legend at the top of the figure
     fig.legend(handles, labels,
@@ -145,9 +146,10 @@ config = load_bash_config('script_constants.sh')
 # middle_path_sol_exp = "results/ga_singles/solutions/ntw_722_050-050-025_C/obj_distance-occ_variance-pw_consumption/Replicas050/Genetics/exp_single"
 # middle_path_ana_exp = "results/ga_singles/analysis/ntw_722_050-050-025_C/obj_distance-occ_variance-pw_consumption/Replicas050/Genetics/exp_single"
 # network_file = "results/ga_singles/networks/ntw_722_050-050-025_C"  # You'll need to provide the correct network file path
-results_path = "results/"
+results_path = "results_longest/"
 
-N_EXECUTIONS = config['N_EXECUTIONS']
+# N_EXECUTIONS = config['N_EXECUTIONS']
+N_EXECUTIONS = 30
 ALGORITHMS = config['ALGORITHMS']
 POP_SIZE = config['POP_SIZE']
 HYBRID_POP_SIZE = config['HYBRID_POP_SIZE']

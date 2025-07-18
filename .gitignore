@@ -7,6 +7,7 @@ deprecated/*
 resopt/analysis/__pycache__/*
 resopt/problem/__pycache__/*
 resopt/files/__pycache__/*
+results_longest/*
 *.pyc
 __pycache__/*
 *.pyc.1

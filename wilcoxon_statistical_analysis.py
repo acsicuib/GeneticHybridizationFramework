@@ -745,7 +745,9 @@ def main():
     output_path = "results_hybrid_400_500/"
     N_EXECUTIONS = 3
 
-
+    path_results = "results_longest/"
+    output_path = "results_longest/"
+    N_EXECUTIONS = 30
 
     # Load standard algorithms data
     standard_file = path_results+f"table_standard_{config['POP_SIZE']}_{config['N_GEN']}.csv" #Note: they are computed until CUT_GENERATION
