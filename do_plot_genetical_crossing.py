@@ -81,7 +81,7 @@ for ixa,algorithm in enumerate(config['HYBRID_ALGORITHMS']):
     # Create stacked area plot
     axt.stackplot(dg.index, dg.T, labels=dg.columns)
 
-    fig.savefig(f'{results_path}/plots/genetic_crossing.png', dpi=300, bbox_inches='tight')
+    fig.savefig(f'{results_path}plots/genetic_crossing.png', dpi=300, bbox_inches='tight')
     plt.close(fig)  # Close the figure to free memory
 
 
