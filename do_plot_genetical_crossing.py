@@ -24,7 +24,7 @@ SEEDS = range(1,N_EXECUTIONS+1)
  
 SEQ_HYBRIDS = 17
 path_exp = results_path+"hybridization/"
-file = "{algorithm}_1_1600-500_SV0-CV2-MV1_MM0.2-MC0.1-MB0.1.txt"
+file = "{algorithm}_1_400-500_SV0-CV2-MV1_MM0.2-MC0.1-MB0.1.txt"
 
 # col_dumps = np.array(ast.literal_eval(config['HYBRID_GEN_STEPS'])).ravel()
 col_dumps = config['HYBRID_GEN_STEPS']
