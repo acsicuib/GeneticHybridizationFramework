@@ -58,6 +58,7 @@ print(columns)
 df = pd.DataFrame()
 for algorithm in config['HYBRID_ALGORITHMS']:
     for replica in range(1, replicas + 1):
+        print(f"Loading {algorithm} replica {replica}")
         path = path_exp + file.format(algorithm=algorithm, replica=replica)
         dft = pd.read_csv(path, sep=" ", header=None)
         dft.drop(columns=[len(dft.columns)-1], inplace=True)
@@ -68,12 +69,12 @@ for algorithm in config['HYBRID_ALGORITHMS']:
 # Update columns to include 'replica'
 df.columns = columns + ['replica']
 
-print(df.head())
+# print(df.head())
 
 filter = ["A0_100","A1_100","A2_100","A3_100"]
 rename_filter = dict(zip(filter,config['HYBRID_ALGORITHMS']))
 filter.append("Generation")
-print(filter)
+# print(filter)
 
 
 
@@ -83,6 +84,7 @@ fig, axs = plt.subplots(ncols=2, nrows=2, figsize=(8, 8),
 for ixa,algorithm in enumerate(config['HYBRID_ALGORITHMS']):
     axt = axs[ixa//2,ixa%2]
     axt.set_title(algorithm)
+    axt.set_ylim(0,1)
     
     dt = df[df['algorithm'] == algorithm].loc[:,filter + ['replica']]
     dt.rename(columns=rename_filter,inplace=True)
@@ -95,54 +97,61 @@ for ixa,algorithm in enumerate(config['HYBRID_ALGORITHMS']):
     line_objs = {}
     for col in config['HYBRID_ALGORITHMS']:
         line, = axt.plot(dg_mean.index, dg_mean[col], label=col, linewidth=2)
-        axt.fill_between(dg_mean.index, 
-                         dg_mean[col] - dg_std[col], 
-                         dg_mean[col] + dg_std[col], 
-                         color=line.get_color(), alpha=0.2)
+        # axt.fill_between(dg_mean.index, 
+        #                  dg_mean[col] - dg_std[col], 
+        #                  dg_mean[col] + dg_std[col], 
+        #                  color=line.get_color(), alpha=0.2)
         line_objs[col] = line
     for x in xlines:
         axt.vlines(x, 0, 1, colors='black', linestyles='dashed')
+        # Add X-mark at the first generation greater than the vline
+        for col in config['HYBRID_ALGORITHMS']:
+            # Find the first index in dg_mean.index greater than x
+            next_indices = np.where(dg_mean.index > x)[0]
+            if len(next_indices) == 0:
+                continue  # No next value exists
+            next_idx = next_indices[0]
+            x_val = dg_mean.index[next_idx]
+            y_val = dg_mean.iloc[next_idx][col]
+            axt.plot(x_val, y_val, marker='x', color=line_objs[col].get_color(), markersize=8, markeredgewidth=2)
 
-    # Annotate with percentage text at midpoints between vlines
-    xlines_sorted = np.sort(xlines)
-    x_intervals = [dg_mean.index[0]] + list(xlines_sorted) + [dg_mean.index[-1]]
-    midpoints = [(x_intervals[i] + x_intervals[i+1]) / 2 for i in range(len(x_intervals)-1)]
+    # Annotate with percentage text at specific indices: 101, 201, 301, 401
+    target_indices = [101, 201, 301, 401]
     algs = config['HYBRID_ALGORITHMS']
     y_offset = 0.04  # vertical offset between annotations
-    for midpoint in midpoints:
-        closest_idx = np.abs(dg_mean.index - midpoint).argmin()
-        x = dg_mean.index[closest_idx]
-        total = dg_mean.iloc[closest_idx].sum()
+    x_offset = -34
+
+    for idx in target_indices:
+        if idx not in dg_mean.index:
+            continue  # Skip if this generation is not present
+        total = dg_mean.loc[idx].sum()
         if total == 0:
             continue
         for j, col in enumerate(algs):
-            percent = dg_mean.loc[x, col] / total * 100
+            percent = dg_mean.loc[idx][col] / total * 100
             if percent < 0.1:
                 continue
-            y = dg_mean.loc[x, col]
+            y = dg_mean.loc[idx][col]
             color = line_objs[col].get_color()
-            # Determine annotation position and alignment
-            if col.upper() in ['UNSGA3', 'SMSEMOA']:
-                y = y - y_offset
-                va = 'top'
-                if col.upper() == 'UNSGA3' and ixa == 2 and x >= 100 and x <=200:
-                    y = y - y_offset * 1.2
-
-            elif col.upper() in ['NSGA3', 'NSGA2']:
+            # Determine annotation position and alignment (reuse your logic if needed)
+            if col.upper() == 'NSGA2':
                 y = y + y_offset
                 va = 'bottom'
-                # Special case: NSGA2 in first subplot, after first vline
-                if col.upper() == 'NSGA2' and ixa == 0 and x >= 100:
-                    y = y + y_offset * 0.7  # add extra offset
-                if col.upper() == 'NSGA2' and ixa == 0 and x < 100:
-                    y = y - y_offset 
-                if col.upper() == 'NSGA3' and ixa == 1 and x < 100:
-                    y = y - y_offset 
-                if col.upper() == 'NSGA2' and ixa == 3 and x >= 300 and x <=400:
-                    y = y - y_offset * 2.2
+                if ixa == 0 or ixa == 3:
+                    y = y - y_offset * 3
+            elif col.upper() in ['UNSGA3', 'SMSEMOA']:
+                y = y - y_offset
+                va = 'top'
+                if col.upper() == 'UNSGA3' and ixa == 2 and idx >= 100 and idx <= 200:
+                    y = y - y_offset * 1.2
+            elif col.upper() in ['NSGA3']:
+                y = y + y_offset
+                va = 'bottom'
+                if ixa == 1 and idx < 100:
+                    y = y - y_offset
             else:
                 va = 'bottom'
-            axt.text(x, y, f"{percent:.1f}%", ha='center', va=va, fontsize=8, color=color, weight='bold')
+            axt.text(idx - x_offset, y, f"{percent:.1f}%", ha='center', va=va, fontsize=8, color=color, weight='bold')
 
 # Remove per-axes legend
 # Add a single legend for the whole figure, outside the rightmost subplot
