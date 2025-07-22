@@ -80,7 +80,7 @@ def perform_wilcoxon_tests(df, metrics, algorithms, alpha=0.05):
                     'std2': np.std(data2)
                 }
                 
-                print(f"  {alg1} vs {alg2}: p={p_value:.4f}, significant={is_significant}, effect_size={effect_size:.4f}")
+                print(f"  {alg1} vs {alg2}: p={p_value:.9f}, significant={is_significant}, effect_size={effect_size:.9f}")
                 
             except Exception as e:
                 print(f"Error in Wilcoxon test for {alg1} vs {alg2} in {metric}: {e}")
@@ -145,11 +145,14 @@ def create_heatmap(results, metrics, algorithms, output_file='plots/wilcoxon_hea
                     p_matrix[i, j] = min(p_values)
     
     # Create the heatmap
-    fig, axes = plt.subplots(1, len(metrics), figsize=(5*len(metrics), 5))
+    fig, axes = plt.subplots(2, 3, figsize=(5*3, 5*2))
+    axes = axes.flatten()
     if len(metrics) == 1:
-        axes = [axes]
+        axes = [axes[0]]
     
     for idx, metric in enumerate(metrics):
+        if idx >= len(axes):
+            break
         ax = axes[idx]
         
         # Create metric-specific matrix
@@ -285,8 +288,8 @@ def analyze_convergence_speed(df, metrics, algorithms, alpha=0.05):
                         'std2': np.std(conv2_vals)
                     }
                     
-                    print(f"  {alg1} vs {alg2}: p={p_value:.4f}, significant={is_significant}, effect_size={effect_size:.4f}")
-                    print(f"    Avg convergence: {np.mean(conv1_vals):.1f} vs {np.mean(conv2_vals):.1f} generations")
+                    print(f"  {alg1} vs {alg2}: p={p_value:.9f}, significant={is_significant}, effect_size={effect_size:.9f}")
+                    print(f"    Avg convergence: {np.mean(conv1_vals):.8f} vs {np.mean(conv2_vals):.8f} generations")
                     
                 except Exception as e:
                     print(f"Error in convergence analysis for {alg1} vs {alg2} in {metric}: {e}")
@@ -481,11 +484,14 @@ def create_detailed_seed_analysis(individual_results, metrics, algorithms, outpu
 
 def create_win_rate_heatmap(individual_results, metrics, algorithms, output_file='plots/win_rate_heatmap.png'):
     """Create a heatmap showing win rates for each algorithm pair"""
-    fig, axes = plt.subplots(1, len(metrics), figsize=(5*len(metrics), 5))
+    fig, axes = plt.subplots(2, 3, figsize=(5*3, 5*2))
+    axes = axes.flatten()
     if len(metrics) == 1:
-        axes = [axes]
+        axes = [axes[0]]
     
     for idx, metric in enumerate(metrics):
+        if idx >= len(axes):
+            break
         ax = axes[idx]
         
         # Create win rate matrix
@@ -512,24 +518,191 @@ def create_win_rate_heatmap(individual_results, metrics, algorithms, output_file
                             win_rate_matrix[i, j] = win_rate
         
         # Create heatmap
+        # Only show colorbar for the first subplot in each row
+        # show_cbar = (idx % 3 == 0)
+        # show_cbar = (idx % 3 == 0)
+        show_cbar = False
         sns.heatmap(win_rate_matrix, 
                    annot=True, 
                    fmt='.1f',
                    cmap='RdYlBu',
                    vmin=0, 
                    vmax=100,
-                   cbar_kws={'label': 'Win Rate (%)'},
+                   cbar=show_cbar,
+                   cbar_kws={'label': 'Win Rate (%)'} if show_cbar else None,
                    xticklabels=algorithms,
                    yticklabels=algorithms,
                    ax=ax)
         
-        ax.set_title(f'{metric} - Win Rates (%)')
+        ax.set_title(f'{metric} - Win Rates (%)', fontsize=18)
         ax.set_xlabel('Algorithm 2')
         ax.set_ylabel('Algorithm 1')
+        ax.set_xticklabels(ax.get_xticklabels(), rotation=0, fontsize=10)
+        ax.set_yticklabels(ax.get_yticklabels(), rotation=0, fontsize=10)
     
+    # Remove extra subplot if not used
+    if len(metrics) < len(axes):
+        for idx in range(len(metrics), len(axes)):
+            fig.delaxes(axes[idx])
+
     plt.tight_layout()
     plt.savefig(output_file, dpi=300, bbox_inches='tight')
     plt.show()
+
+def create_win_rate_pvalue_effectsize_heatmap(individual_results, results, metrics, algorithms, output_file='plots/win_rate_pvalue_effectsize_heatmap.png'):
+    """Create a heatmap showing win rate, p-value, and effect size for each algorithm pair"""
+    import matplotlib.pyplot as plt
+    import seaborn as sns
+    import numpy as np
+
+    fig, axes = plt.subplots(1, len(metrics), figsize=(6*len(metrics), 6))
+    if len(metrics) == 1:
+        axes = [axes]
+
+    for idx, metric in enumerate(metrics):
+        ax = axes[idx]
+        n_algs = len(algorithms)
+        win_rate_matrix = np.full((n_algs, n_algs), np.nan)
+        pvalue_matrix = np.full((n_algs, n_algs), np.nan)
+        effectsize_matrix = np.full((n_algs, n_algs), np.nan)
+        annot_matrix = np.empty((n_algs, n_algs), dtype=object)
+        annot_matrix[:] = ''
+
+        for i, alg1 in enumerate(algorithms):
+            for j, alg2 in enumerate(algorithms):
+                if i == j:
+                    continue
+                # Win rate
+                win_rate = None
+                comparison = f"{alg1}_vs_{alg2}"
+                reverse_comparison = f"{alg2}_vs_{alg1}"
+                if comparison in individual_results[metric]:
+                    result = individual_results[metric][comparison]
+                    total = result['total_comparisons']
+                    if total > 0:
+                        win_rate = result['wins_alg1'] / total * 100
+                elif reverse_comparison in individual_results[metric]:
+                    result = individual_results[metric][reverse_comparison]
+                    total = result['total_comparisons']
+                    if total > 0:
+                        win_rate = result['wins_alg2'] / total * 100
+                # p-value and effect size
+                p_value = None
+                effect_size = None
+                if comparison in results[metric]:
+                    res = results[metric][comparison]
+                    if 'error' not in res:
+                        p_value = res['p_value']
+                        effect_size = res['effect_size']
+                elif reverse_comparison in results[metric]:
+                    res = results[metric][reverse_comparison]
+                    if 'error' not in res:
+                        p_value = res['p_value']
+                        effect_size = res['effect_size']
+                # Fill matrices
+                if win_rate is not None:
+                    win_rate_matrix[i, j] = win_rate
+                if p_value is not None:
+                    pvalue_matrix[i, j] = p_value
+                if effect_size is not None:
+                    effectsize_matrix[i, j] = effect_size
+                # Annotation
+                if win_rate is not None and p_value is not None and effect_size is not None:
+                    annot_matrix[i, j] = f"{win_rate:.1f}%\np={p_value:.3g}\nr={effect_size:.2f}"
+                elif win_rate is not None:
+                    annot_matrix[i, j] = f"{win_rate:.1f}%"
+                elif p_value is not None:
+                    annot_matrix[i, j] = f"p={p_value:.3g}"
+                elif effect_size is not None:
+                    annot_matrix[i, j] = f"r={effect_size:.2f}"
+                else:
+                    annot_matrix[i, j] = ""
+        # Plot heatmap (color by win rate)
+        sns.heatmap(win_rate_matrix, annot=annot_matrix, fmt='', cmap='RdYlBu', vmin=0, vmax=100,
+                    cbar_kws={'label': 'Win Rate (%)'}, xticklabels=algorithms, yticklabels=algorithms, ax=ax, linewidths=0.5, linecolor='gray')
+        ax.set_title(f'{metric} - Win Rate / p-value / Effect Size')
+        ax.set_xlabel('Algorithm 2')
+        ax.set_ylabel('Algorithm 1')
+    plt.tight_layout()
+    plt.savefig(output_file, dpi=300, bbox_inches='tight')
+    plt.show()
+
+def create_win_rate_pvalue_effectsize_latex(individual_results, results, metrics, algorithms, output_dir='plots/'):
+    """Create a LaTeX table for each metric showing win rate, p-value, and effect size for each algorithm pair"""
+    import os
+    if not os.path.exists(output_dir):
+        os.makedirs(output_dir)
+    for metric in metrics:
+        n_algs = len(algorithms)
+        # Build table header
+        header = ' & ' + ' & '.join(algorithms) + ' \\\n'
+        header = '\\toprule\nAlgorithm ' + header + '\\midrule\n'
+        rows = []
+        for i, alg1 in enumerate(algorithms):
+            row = [alg1]
+            for j, alg2 in enumerate(algorithms):
+                if i == j:
+                    row.append('--')
+                    continue
+                # Win rate
+                win_rate = None
+                comparison = f"{alg1}_vs_{alg2}"
+                reverse_comparison = f"{alg2}_vs_{alg1}"
+                if comparison in individual_results[metric]:
+                    result = individual_results[metric][comparison]
+                    total = result['total_comparisons']
+                    if total > 0:
+                        win_rate = result['wins_alg1'] / total * 100
+                elif reverse_comparison in individual_results[metric]:
+                    result = individual_results[metric][reverse_comparison]
+                    total = result['total_comparisons']
+                    if total > 0:
+                        win_rate = result['wins_alg2'] / total * 100
+                # p-value and effect size
+                p_value = None
+                effect_size = None
+                if comparison in results[metric]:
+                    res = results[metric][comparison]
+                    if 'error' not in res:
+                        p_value = res['p_value']
+                        effect_size = res['effect_size']
+                elif reverse_comparison in results[metric]:
+                    res = results[metric][reverse_comparison]
+                    if 'error' not in res:
+                        p_value = res['p_value']
+                        effect_size = res['effect_size']
+                # Format cell
+                if win_rate is not None and p_value is not None and effect_size is not None:
+                    cell = f"{win_rate:.1f}\\% / p={p_value:.3g} / r={effect_size:.2f}"
+                elif win_rate is not None:
+                    cell = f"{win_rate:.1f}\\%"
+                elif p_value is not None:
+                    cell = f"p={p_value:.3g}"
+                elif effect_size is not None:
+                    cell = f"r={effect_size:.2f}"
+                else:
+                    cell = ""
+                row.append(cell)
+            rows.append(' & '.join(row) + ' \\\n')
+        # Compose LaTeX table
+        table = (
+            '\\begin{table}[ht]\n'
+            '\\centering\n'
+            f'\\caption{{Win rate, p-value, and effect size for {metric}}}\n'
+            f'\\label{{tab:winrate_{metric}}}\n'
+            '\\begin{tabular}{l' + 'c'*n_algs + '}\n'
+            '\\toprule\n'
+            + header +
+            ''.join(rows) +
+            '\\bottomrule\n'
+            '\\end{tabular}\n'
+            '\\end{table}\n'
+        )
+        # Write to file
+        tex_file = os.path.join(output_dir, f'win_rate_pvalue_effectsize_{metric}.tex')
+        with open(tex_file, 'w') as f:
+            f.write(table)
+        print(f"LaTeX table for {metric} saved to {tex_file}")
 
 def create_seed_best_algorithm_summary(df, metrics, algorithms, output_file='seed_best_algorithm_summary.csv'):
     """
@@ -592,7 +765,7 @@ def create_seed_best_algorithm_summary(df, metrics, algorithms, output_file='see
                     'Value_Range': worst_value - best_value,
                     'Num_Algorithms': len(all_values),
                     'All_Algorithms': ', '.join(all_algorithms),
-                    'All_Values': ', '.join([f"{alg}: {val:.6f}" for alg, val in zip(all_algorithms, all_values)])
+                    'All_Values': ', '.join([f"{alg}: {val:.8f}" for alg, val in zip(all_algorithms, all_values)])
                 })
     
     summary_df = pd.DataFrame(summary_data)
@@ -783,9 +956,9 @@ def main():
     if len(significant_results) > 0:
         for _, row in significant_results.iterrows():
             print(f"{row['Metric']}: {row['Algorithm_1']} vs {row['Algorithm_2']}")
-            print(f"  p-value: {row['P_Value']:.6f}")
-            print(f"  effect size: {row['Effect_Size']:.4f}")
-            print(f"  means: {row['Mean_1']:.4f} vs {row['Mean_2']:.4f}")
+            print(f"  p-value: {row['P_Value']:.8f}")
+            print(f"  effect size: {row['Effect_Size']:.8f}")
+            print(f"  means: {row['Mean_1']:.8f} vs {row['Mean_2']:.8f}")
             print()
     else:
         print("No significant differences found in final generation.")
@@ -808,9 +981,9 @@ def main():
     if len(significant_convergence) > 0:
         for _, row in significant_convergence.iterrows():
             print(f"{row['Metric']}: {row['Algorithm_1']} vs {row['Algorithm_2']}")
-            print(f"  p-value: {row['P_Value']:.6f}")
-            print(f"  effect size: {row['Effect_Size']:.4f}")
-            print(f"  avg convergence (generations): {row['Mean_1']:.1f} vs {row['Mean_2']:.1f}")
+            print(f"  p-value: {row['P_Value']:.8f}")
+            print(f"  effect size: {row['Effect_Size']:.8f}")
+            print(f"  avg convergence (generations): {row['Mean_1']:.8f} vs {row['Mean_2']:.8f}")
             print()
     else:
         print("No significant differences found in convergence speed.")
@@ -837,6 +1010,8 @@ def main():
     create_boxplots(df, metrics, algorithms, output_path+'plots/metrics_boxplots_final_generation.png')
     create_convergence_plot(df, metrics, algorithms, output_path+'plots/convergence_analysis.png')
     create_win_rate_heatmap(individual_results, metrics, algorithms, output_path+'plots/win_rate_heatmap.png')
+    # create_win_rate_pvalue_effectsize_heatmap(individual_results, results, metrics, algorithms, output_path+'plots/win_rate_pvalue_effectsize_heatmap.png')
+    # create_win_rate_pvalue_effectsize_latex(individual_results, results, metrics, algorithms, output_path+'plots/')
     
     # Print overall summary statistics
     print("\n=== OVERALL SUMMARY STATISTICS ===")

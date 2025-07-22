@@ -45,6 +45,7 @@ uv run compute_metrics_standard.py
 #plots
 uv run do_algorithms_plot_with_replicates.py
 uv run wilcoxon_statistical_analysis.py
+uv run do_plot_genetical_crossing.py
 ```
 ## Directory Structure
 - resopt/ – Core optimization, problem definitions, and plotting modules.

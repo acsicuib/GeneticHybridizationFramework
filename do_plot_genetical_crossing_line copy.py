@@ -25,7 +25,9 @@ SEEDS = range(1,N_EXECUTIONS+1)
  
 SEQ_HYBRIDS = 17
 path_exp = results_path+"hybridization/"
-file = "{algorithm}_1_400-500_SV0-CV2-MV1_MM0.2-MC0.1-MB0.1.txt"
+
+replicas = 2
+file = "{algorithm}_{replicas}_400-500_SV0-CV2-MV1_MM0.2-MC0.1-MB0.1.txt"
 
 # col_dumps = np.array(ast.literal_eval(config['HYBRID_GEN_STEPS'])).ravel()
 col_dumps = config['HYBRID_GEN_STEPS']
@@ -76,44 +78,65 @@ for ixa,algorithm in enumerate(config['HYBRID_ALGORITHMS']):
     axt = axs[ixa//2,ixa%2]
     axt.set_title(algorithm)
     
-
     dt = df[df['algorithm'] == algorithm].loc[:,filter]
     dt.rename(columns=rename_filter,inplace=True)
 
     dg = dt.groupby("Generation").mean().reset_index()
     dg.set_index('Generation', inplace=True)
-    # Create stacked area plot
-    stack = axt.stackplot(dg.index, dg.T, labels=dg.columns)
+    # Plot each algorithm as a line and store the line objects
+    line_objs = {}
+    for col in config['HYBRID_ALGORITHMS']:
+        line, = axt.plot(dg.index, dg[col], label=col, linewidth=2)
+        line_objs[col] = line
     for x in xlines:
         axt.vlines(x, 0, 1, colors='black', linestyles='dashed')
 
     # Annotate with percentage text at midpoints between vlines
-    y_stack = np.vstack([np.zeros(len(dg)), np.cumsum(dg.T, axis=0)])
     xlines_sorted = np.sort(xlines)
-    # Add start and end for intervals
     x_intervals = [dg.index[0]] + list(xlines_sorted) + [dg.index[-1]]
     midpoints = [(x_intervals[i] + x_intervals[i+1]) / 2 for i in range(len(x_intervals)-1)]
-    # For each midpoint, find the closest generation in dg.index
+    algs = config['HYBRID_ALGORITHMS']
+    y_offset = 0.04  # vertical offset between annotations
     for midpoint in midpoints:
         closest_idx = np.abs(dg.index - midpoint).argmin()
         x = dg.index[closest_idx]
         total = dg.iloc[closest_idx].sum()
         if total == 0:
             continue
-        for i, col in enumerate(dg.columns):
-            percent = dg.iloc[closest_idx, i] / total * 100
-            if percent < 0.1:  # Only annotate if >5% to avoid clutter
-                 continue
-            y_bottom = y_stack[i, closest_idx]
-            y_top = y_stack[i+1, closest_idx]
-            y_center = (y_bottom + y_top) / 2
-            axt.text(x, y_center, f"{percent:.1f}%", ha='center', va='center', fontsize=8, color='white', weight='bold')
+        for j, col in enumerate(algs):
+            percent = dg.loc[x, col] / total * 100
+            if percent < 0.1:
+                continue
+            y = dg.loc[x, col]
+            color = line_objs[col].get_color()
+            # Determine annotation position and alignment
+            if col.upper() in ['UNSGA3', 'SMSEMOA']:
+                y = y - y_offset
+                va = 'top'
+                if col.upper() == 'UNSGA3' and ixa == 2 and x >= 100 and x <=200:
+                    y = y - y_offset * 1.2
+
+            elif col.upper() in ['NSGA3', 'NSGA2']:
+                y = y + y_offset
+                va = 'bottom'
+                # Special case: NSGA2 in first subplot, after first vline
+                if col.upper() == 'NSGA2' and ixa == 0 and x >= 100:
+                    y = y + y_offset * 0.7  # add extra offset
+                if col.upper() == 'NSGA2' and ixa == 0 and x < 100:
+                    y = y - y_offset 
+                if col.upper() == 'NSGA3' and ixa == 1 and x < 100:
+                    y = y - y_offset 
+                if col.upper() == 'NSGA2' and ixa == 3 and x >= 300 and x <=400:
+                    y = y - y_offset * 2.2
+            else:
+                va = 'bottom'
+            axt.text(x, y, f"{percent:.1f}%", ha='center', va=va, fontsize=8, color=color, weight='bold')
 
 # Remove per-axes legend
 # Add a single legend for the whole figure, outside the rightmost subplot
 handles, labels = axs[0,0].get_legend_handles_labels()
 fig.legend(handles, labels, loc='center left', bbox_to_anchor=(1.05, 0.5), fontsize=14)
-fig.savefig(f'{results_path}plots/genetic_crossing.png', dpi=300, bbox_inches='tight')
+fig.savefig(f'{results_path}plots/genetic_crossing_lines.png', dpi=300, bbox_inches='tight')
 plt.close(fig)  # Close the figure to free memory
 
 
