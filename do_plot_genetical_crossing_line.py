@@ -138,9 +138,9 @@ for ixa,algorithm in enumerate(config['HYBRID_ALGORITHMS']):
                 y = y + y_offset
                 va = 'bottom'
                 if ixa == 0 and idx <= 100:
-                    y = y - y_offset * 2.5
+                    y = y - y_offset * 3.5
                 if ixa == 0 and idx >= 100:
-                    y = y + y_offset * 2.5
+                    y = y + y_offset * 1.5
                 if ixa == 3:
                     y = y - y_offset * 2.8
                 if ixa == 1 or ixa == 2:
@@ -151,24 +151,24 @@ for ixa,algorithm in enumerate(config['HYBRID_ALGORITHMS']):
                 if ixa == 0 and idx <= 100:
                     y = y - y_offset * 1.8
                 if ixa == 3:
-                    y = y - y_offset
+                    y = y - y_offset *1.05
 
             elif col.upper() in ['UNSGA3']:
                 y = y - y_offset
                 va = 'top'
                 if col.upper() == 'UNSGA3' and ixa == 2 and idx >= 100 and idx <= 200:
                     y = y - y_offset * 1.2
-                if ixa == 3:
-                    y = y - y_offset * 0.7
+                # if ixa == 3:
+                #     y = y - y_offset * 0.7
             elif col.upper() in ['NSGA3']:
                 y = y + y_offset
                 va = 'bottom'
                 # if ixa == 1 and idx < 100:
                 #     y = y - y_offset
                 if ixa == 1:
-                    y = y + y_offset * 1.
+                    y = y + y_offset * 0.7
                 if ixa == 2:
-                    y = y + y_offset * 1.
+                    y = y + y_offset * 0.7
             else:
                 va = 'bottom'
             axt.text(idx - x_offset, y, f"{percent:.1f}%", ha='center', va=va, fontsize=8, color=color, weight='bold')
