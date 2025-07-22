@@ -137,27 +137,38 @@ for ixa,algorithm in enumerate(config['HYBRID_ALGORITHMS']):
             if col.upper() == 'NSGA2':
                 y = y + y_offset
                 va = 'bottom'
-                if ixa == 0 or ixa == 3:
+                if ixa == 0 and idx <= 100:
                     y = y - y_offset * 2.5
+                if ixa == 0 and idx >= 100:
+                    y = y + y_offset * 2.5
+                if ixa == 3:
+                    y = y - y_offset * 2.8
                 if ixa == 1 or ixa == 2:
                     y = y - y_offset
             elif col.upper() == 'SMSEMOA':
                 y = y + y_offset
                 va = 'top'
+                if ixa == 0 and idx <= 100:
+                    y = y - y_offset * 1.8
+                if ixa == 3:
+                    y = y - y_offset
+
             elif col.upper() in ['UNSGA3']:
                 y = y - y_offset
                 va = 'top'
                 if col.upper() == 'UNSGA3' and ixa == 2 and idx >= 100 and idx <= 200:
                     y = y - y_offset * 1.2
+                if ixa == 3:
+                    y = y - y_offset * 0.7
             elif col.upper() in ['NSGA3']:
                 y = y + y_offset
                 va = 'bottom'
                 # if ixa == 1 and idx < 100:
                 #     y = y - y_offset
                 if ixa == 1:
-                    y = y + y_offset * 2.1
+                    y = y + y_offset * 1.
                 if ixa == 2:
-                    y = y + y_offset * 1.2
+                    y = y + y_offset * 1.
             else:
                 va = 'bottom'
             axt.text(idx - x_offset, y, f"{percent:.1f}%", ha='center', va=va, fontsize=8, color=color, weight='bold')
