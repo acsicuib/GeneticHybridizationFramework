@@ -137,9 +137,9 @@ for ixa,algorithm in enumerate(config['HYBRID_ALGORITHMS']):
             if col.upper() == 'NSGA2':
                 y = y + y_offset
                 va = 'bottom'
-                if ixa == 0 and idx <= 100:
+                if ixa == 0 and idx < 200:
                     y = y - y_offset * 3.5
-                if ixa == 0 and idx >= 100:
+                if ixa == 0 and idx >= 200:
                     y = y + y_offset * 1.5
                 if ixa == 3:
                     y = y - y_offset * 2.8
