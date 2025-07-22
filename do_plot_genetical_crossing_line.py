@@ -113,7 +113,7 @@ for ixa,algorithm in enumerate(config['HYBRID_ALGORITHMS']):
             next_idx = next_indices[0]
             x_val = dg_mean.index[next_idx]
             y_val = dg_mean.iloc[next_idx][col]
-            axt.plot(x_val, y_val, marker='o', color=line_objs[col].get_color(), markersize=8, markeredgewidth=2)
+            axt.plot(x_val, y_val, marker='o', color=line_objs[col].get_color(), markersize=6, markeredgewidth=2)
 
     # Annotate with percentage text at specific indices: 101, 201, 301, 401
     target_indices = [101, 201, 301, 401]
