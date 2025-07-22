@@ -148,10 +148,10 @@ for ixa,algorithm in enumerate(config['HYBRID_ALGORITHMS']):
             elif col.upper() == 'SMSEMOA':
                 y = y + y_offset
                 va = 'top'
-                if ixa == 0 and idx <= 100:
-                    y = y - y_offset * 1.8
+                if ixa == 0 and idx <= 200:
+                    y = y - y_offset * 2.2
                 if ixa == 3:
-                    y = y - y_offset *1.05
+                    y = y - y_offset *1.1
 
             elif col.upper() in ['UNSGA3']:
                 y = y - y_offset
@@ -159,7 +159,7 @@ for ixa,algorithm in enumerate(config['HYBRID_ALGORITHMS']):
                 if col.upper() == 'UNSGA3' and ixa == 2 and idx >= 100 and idx <= 200:
                     y = y - y_offset * 1.2
                 if ixa == 0 and idx < 200:
-                    y = y - y_offset * 1.8
+                    y = y - y_offset * 1.1
                 if ixa == 3:
                     y = y - y_offset * 0.7
             elif col.upper() in ['NSGA3']:
