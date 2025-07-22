@@ -113,7 +113,7 @@ for ixa,algorithm in enumerate(config['HYBRID_ALGORITHMS']):
             next_idx = next_indices[0]
             x_val = dg_mean.index[next_idx]
             y_val = dg_mean.iloc[next_idx][col]
-            axt.plot(x_val, y_val, marker='x', color=line_objs[col].get_color(), markersize=8, markeredgewidth=2)
+            axt.plot(x_val, y_val, marker='o', color=line_objs[col].get_color(), markersize=8, markeredgewidth=2)
 
     # Annotate with percentage text at specific indices: 101, 201, 301, 401
     target_indices = [101, 201, 301, 401]
@@ -138,8 +138,13 @@ for ixa,algorithm in enumerate(config['HYBRID_ALGORITHMS']):
                 y = y + y_offset
                 va = 'bottom'
                 if ixa == 0 or ixa == 3:
-                    y = y - y_offset * 3
-            elif col.upper() in ['UNSGA3', 'SMSEMOA']:
+                    y = y - y_offset * 2.5
+                if ixa == 1 or ixa == 2:
+                    y = y - y_offset
+            elif col.upper() == 'SMSEMOA':
+                y = y + y_offset
+                va = 'top'
+            elif col.upper() in ['UNSGA3']:
                 y = y - y_offset
                 va = 'top'
                 if col.upper() == 'UNSGA3' and ixa == 2 and idx >= 100 and idx <= 200:
@@ -147,8 +152,12 @@ for ixa,algorithm in enumerate(config['HYBRID_ALGORITHMS']):
             elif col.upper() in ['NSGA3']:
                 y = y + y_offset
                 va = 'bottom'
-                if ixa == 1 and idx < 100:
-                    y = y - y_offset
+                # if ixa == 1 and idx < 100:
+                #     y = y - y_offset
+                if ixa == 1:
+                    y = y + y_offset * 2.1
+                if ixa == 2:
+                    y = y + y_offset * 1.2
             else:
                 va = 'bottom'
             axt.text(idx - x_offset, y, f"{percent:.1f}%", ha='center', va=va, fontsize=8, color=color, weight='bold')
