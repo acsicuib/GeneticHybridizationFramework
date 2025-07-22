@@ -113,7 +113,7 @@ for ixa,algorithm in enumerate(config['HYBRID_ALGORITHMS']):
             next_idx = next_indices[0]
             x_val = dg_mean.index[next_idx]
             y_val = dg_mean.iloc[next_idx][col]
-            axt.plot(x_val, y_val, marker='o', color=line_objs[col].get_color(), markersize=6, markeredgewidth=2)
+            axt.plot(x_val, y_val, marker='o', color=line_objs[col].get_color(), markersize=5, markeredgewidth=2)
 
     # Annotate with percentage text at specific indices: 101, 201, 301, 401
     target_indices = [101, 201, 301, 401]
@@ -138,9 +138,9 @@ for ixa,algorithm in enumerate(config['HYBRID_ALGORITHMS']):
                 y = y + y_offset
                 va = 'bottom'
                 if ixa == 0 and idx < 200:
-                    y = y - y_offset * 3.5
+                    y = y - y_offset * 3.
                 if ixa == 0 and idx >= 200:
-                    y = y + y_offset * 1.5
+                    y = y + y_offset * 1.2
                 if ixa == 3:
                     y = y - y_offset * 2.8
                 if ixa == 1 or ixa == 2:
@@ -158,17 +158,19 @@ for ixa,algorithm in enumerate(config['HYBRID_ALGORITHMS']):
                 va = 'top'
                 if col.upper() == 'UNSGA3' and ixa == 2 and idx >= 100 and idx <= 200:
                     y = y - y_offset * 1.2
-                # if ixa == 3:
-                #     y = y - y_offset * 0.7
+                if ixa == 0 and idx < 200:
+                    y = y - y_offset * 1.8
+                if ixa == 3:
+                    y = y - y_offset * 0.7
             elif col.upper() in ['NSGA3']:
                 y = y + y_offset
                 va = 'bottom'
                 # if ixa == 1 and idx < 100:
                 #     y = y - y_offset
                 if ixa == 1:
-                    y = y + y_offset * 0.7
+                    y = y + y_offset * 0.5
                 if ixa == 2:
-                    y = y + y_offset * 0.7
+                    y = y + y_offset * 0.5
             else:
                 va = 'bottom'
             axt.text(idx - x_offset, y, f"{percent:.1f}%", ha='center', va=va, fontsize=8, color=color, weight='bold')
