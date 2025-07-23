@@ -11,8 +11,7 @@ config = load_bash_config('script_constants.sh')
 # middle_path_ana_exp = "results/ga_singles/analysis/ntw_722_050-050-025_C/obj_distance-occ_variance-pw_consumption/Replicas050/Genetics/exp_single"
 # network_file = "results/ga_singles/networks/ntw_722_050-050-025_C"  # You'll need to provide the correct network file path
 # results_path = "results/"
-# results_path = "results_longest/"
-results_path = "results/"
+results_path = "results_longest/"
 
 # N_EXECUTIONS = config['N_EXECUTIONS']
 N_EXECUTIONS = 30
@@ -26,8 +25,7 @@ SEEDS = range(1,N_EXECUTIONS+1)
  
 SEQ_HYBRIDS = 17
 path_exp = results_path+"hybridization/"
-replicas = 30
-file = "{algorithm}_{replica}_400-500_SV0-CV2-MV1_MM0.2-MC0.1-MB0.1.txt"
+file = "{algorithm}_1_400-500_SV0-CV2-MV1_MM0.2-MC0.1-MB0.1.txt"
 
 # col_dumps = np.array(ast.literal_eval(config['HYBRID_GEN_STEPS'])).ravel()
 col_dumps = config['HYBRID_GEN_STEPS']
@@ -53,22 +51,14 @@ columns += pairs
 
 print(columns)
 
-# Load all replicas for each algorithm
-
 df = pd.DataFrame()
 for algorithm in config['HYBRID_ALGORITHMS']:
-    for replica in range(1, replicas + 1):
-        print(f"Loading {algorithm} replica {replica}")
-        path = path_exp + file.format(algorithm=algorithm, replica=replica)
-        dft = pd.read_csv(path, sep=" ", header=None)
-        dft.drop(columns=[len(dft.columns)-1], inplace=True)
-        dft.insert(loc=0, column='algorithm', value=algorithm)
-        dft['replica'] = replica  # Add replica column
-        df = pd.concat([df, dft])
+    dft = pd.read_csv(path_exp + file.format(algorithm=algorithm),sep=" ",header=None)
+    dft.drop(columns=[len(dft.columns)-1],inplace=True)
+    dft.insert(loc=0, column='algorithm', value=algorithm)
+    df = pd.concat([df,dft])
 
-# Update columns to include 'replica'
-df.columns = columns + ['replica']
-
+df.columns = columns
 
 print(df.head())
 
@@ -87,33 +77,31 @@ for ixa,algorithm in enumerate(config['HYBRID_ALGORITHMS']):
     axt.set_title(algorithm)
     
 
-    dt = df[df['algorithm'] == algorithm].loc[:,filter + ['replica']]
+    dt = df[df['algorithm'] == algorithm].loc[:,filter]
     dt.rename(columns=rename_filter,inplace=True)
 
-    dg_mean = dt.groupby("Generation")[config['HYBRID_ALGORITHMS']].mean().reset_index()
-
-    # dg = dt.groupby("Generation").mean().reset_index()
-    dg_mean.set_index('Generation', inplace=True)
+    dg = dt.groupby("Generation").mean().reset_index()
+    dg.set_index('Generation', inplace=True)
     # Create stacked area plot
-    stack = axt.stackplot(dg_mean.index, dg_mean.T, labels=dg_mean.columns)
+    stack = axt.stackplot(dg.index, dg.T, labels=dg.columns)
     for x in xlines:
         axt.vlines(x, 0, 1, colors='black', linestyles='dashed')
 
     # Annotate with percentage text at midpoints between vlines
-    y_stack = np.vstack([np.zeros(len(dg_mean)), np.cumsum(dg_mean.T, axis=0)])
+    y_stack = np.vstack([np.zeros(len(dg)), np.cumsum(dg.T, axis=0)])
     xlines_sorted = np.sort(xlines)
     # Add start and end for intervals
-    x_intervals = [dg_mean.index[0]] + list(xlines_sorted) + [dg_mean.index[-1]]
+    x_intervals = [dg.index[0]] + list(xlines_sorted) + [dg.index[-1]]
     midpoints = [(x_intervals[i] + x_intervals[i+1]) / 2 for i in range(len(x_intervals)-1)]
     # For each midpoint, find the closest generation in dg.index
     for midpoint in midpoints:
-        closest_idx = np.abs(dg_mean.index - midpoint).argmin()
-        x = dg_mean.index[closest_idx]
-        total = dg_mean.iloc[closest_idx].sum()
+        closest_idx = np.abs(dg.index - midpoint).argmin()
+        x = dg.index[closest_idx]
+        total = dg.iloc[closest_idx].sum()
         if total == 0:
             continue
-        for i, col in enumerate(dg_mean.columns):
-            percent = dg_mean.iloc[closest_idx, i] / total * 100
+        for i, col in enumerate(dg.columns):
+            percent = dg.iloc[closest_idx, i] / total * 100
             if percent < 0.1:  # Only annotate if >5% to avoid clutter
                  continue
             y_bottom = y_stack[i, closest_idx]
