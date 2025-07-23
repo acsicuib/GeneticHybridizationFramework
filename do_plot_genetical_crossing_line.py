@@ -164,7 +164,7 @@ for ixa,algorithm in enumerate(config['HYBRID_ALGORITHMS']):
                     y = y + y_offset * 0.5  #ajustaré abajo y proximo los dos primeros?
      
                 if ixa == 2 and idx > 300: # los dos ultimsoe starán por arriba?
-                    y = y + y_offset * 3 # +1
+                    y = y + y_offset * 2.8 # +1
 
                 if ixa == 0 and idx < 200:
                     y = y - y_offset * 0.7
@@ -172,7 +172,7 @@ for ixa,algorithm in enumerate(config['HYBRID_ALGORITHMS']):
                     y = y - y_offset * 0.1 #* se acerca 
                 if ixa == 3 and idx < 300 and idx > 200:
                     # y = y - y_offset * 0.01 
-                    y = y  #estará cerca de la linea?
+                    y = y + y_offset * 0.6  #estará cerca de la linea?
 
             elif col.upper() in ['NSGA3']:
                 y = y + y_offset
