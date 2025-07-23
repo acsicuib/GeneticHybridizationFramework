@@ -90,7 +90,12 @@ fig, axs = plt.subplots(ncols=2, nrows=2, figsize=(8, 8),
 for ixa,algorithm in enumerate(config['HYBRID_ALGORITHMS']):
     axt = axs[ixa//2,ixa%2]
     axt.set_title(algorithm)
-    
+    # Set y-axis ticks to percentage
+    axt.set_yticks(np.linspace(0, 1, 6))
+    axt.set_yticklabels([f"{int(y*100)}%" for y in np.linspace(0, 1, 6)])
+
+    axt.set_xlabel('Generation')
+    axt.set_ylabel('Percentage of genetic material')
 
     dt = df[df['algorithm'] == algorithm].loc[:,filter]
     dt.rename(columns=rename_filter,inplace=True)
@@ -130,6 +135,7 @@ for ixa,algorithm in enumerate(config['HYBRID_ALGORITHMS']):
             y_top = y_stack[i+1, closest_idx]
             y_center = (y_bottom + y_top) / 2
             axt.text(x, y_center, f"{percent:.1f}%", ha='center', va='center', fontsize=8, color='white', weight='bold')
+
 
 # Remove per-axes legend
 # Add a single legend for the whole figure, outside the rightmost subplot
