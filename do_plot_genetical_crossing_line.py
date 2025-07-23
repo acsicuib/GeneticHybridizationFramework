@@ -161,10 +161,10 @@ for ixa,algorithm in enumerate(config['HYBRID_ALGORITHMS']):
                 y = y - y_offset
                 va = 'top'
                 if ixa == 2 and idx >= 100 and idx <= 300:
-                    y = y - y_offset * 0.5 #ajustaré abajo y proximo los dos primeros?
+                    y = y  #ajustaré abajo y proximo los dos primeros?
      
                 if ixa == 2 and idx > 300: # los dos ultimsoe starán por arriba?
-                    y = y + y_offset * 1.1
+                    y = y + y_offset * 2.5
 
                 if ixa == 0 and idx < 200:
                     y = y - y_offset * 0.7
