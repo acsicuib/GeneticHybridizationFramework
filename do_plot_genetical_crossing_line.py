@@ -165,7 +165,7 @@ for ixa,algorithm in enumerate(config['HYBRID_ALGORITHMS']):
                 if ixa == 0 and idx < 200:
                     y = y - y_offset * 0.7
                 if ixa == 3:
-                    y = y - y_offset * 0.1 #* 0.5 más lejos?
+                    y = y - y_offset * 0.1 #* se acerca o se aleja?
 
             elif col.upper() in ['NSGA3']:
                 y = y + y_offset
