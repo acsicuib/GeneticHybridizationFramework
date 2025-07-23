@@ -153,9 +153,9 @@ for ixa,algorithm in enumerate(config['HYBRID_ALGORITHMS']):
                 if ixa == 3:
                     y = y - y_offset 
                 if ixa == 3 and idx < 200:
-                    y = y + y_offset
+                    y = y + y_offset * 1.5
                 if ixa == 2 and idx >= 200:
-                    y = y - y_offset * 1.1
+                    y = y - y_offset * 1.5
 
             elif col.upper() in ['UNSGA3']:
                 y = y - y_offset
@@ -165,8 +165,8 @@ for ixa,algorithm in enumerate(config['HYBRID_ALGORITHMS']):
                 if ixa == 0 and idx < 200:
                     y = y - y_offset * 0.7
                 if ixa == 3:
-                    y = y - y_offset
-                    
+                    y = y - y_offset * 1.2
+
             elif col.upper() in ['NSGA3']:
                 y = y + y_offset
                 va = 'bottom'
