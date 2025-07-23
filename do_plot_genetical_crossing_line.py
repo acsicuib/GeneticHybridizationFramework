@@ -153,7 +153,7 @@ for ixa,algorithm in enumerate(config['HYBRID_ALGORITHMS']):
                 if ixa == 3:
                     y = y - y_offset * 1.3
                 if ixa == 3 and idx < 200:
-                    y = y + y_offset * 1.5
+                    y = y + y_offset * 2 #estaba a 1.5 espero que se aleja más
                 if ixa == 2 and idx >= 200:
                     y = y - y_offset * 1.5
 
@@ -165,7 +165,9 @@ for ixa,algorithm in enumerate(config['HYBRID_ALGORITHMS']):
                 if ixa == 0 and idx < 200:
                     y = y - y_offset * 0.7
                 if ixa == 3:
-                    y = y - y_offset * 0.1 #* se acerca o se aleja?
+                    y = y - y_offset * 0.1 #* se acerca 
+                if ixa == 3 and idx < 300 and idx > 200:
+                    y = y - y_offset * 0.01 
 
             elif col.upper() in ['NSGA3']:
                 y = y + y_offset
@@ -177,7 +179,7 @@ for ixa,algorithm in enumerate(config['HYBRID_ALGORITHMS']):
                 if ixa == 2:
                     y = y + y_offset * 0.5
                 if ixa == 3 and idx < 200:
-                    y = y - y_offset
+                    y = y - y_offset * 1.5 #espero que baje más estaba sin nada
             else:
                 va = 'bottom'
             axt.text(idx - x_offset, y, f"{percent:.1f}%", ha='center', va=va, fontsize=8, color=color, weight='bold')
