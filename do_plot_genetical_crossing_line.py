@@ -154,17 +154,17 @@ for ixa,algorithm in enumerate(config['HYBRID_ALGORITHMS']):
                     y = y - y_offset * 1.3
                 if ixa == 3 and idx < 200:
                     y = y + y_offset * 2 #estaba a 1.5 espero que se aleja más
-                if ixa == 2 and idx >= 200:
+                if ixa == 2 and idx >= 300:
                     y = y - y_offset * 1.5
 
             elif col.upper() in ['UNSGA3']:
                 y = y - y_offset
                 va = 'top'
                 if ixa == 2 and idx >= 100 and idx <= 300:
-                    y = y  #ajustaré abajo y proximo los dos primeros?
+                    y = y + y_offset * 0.5  #ajustaré abajo y proximo los dos primeros?
      
                 if ixa == 2 and idx > 300: # los dos ultimsoe starán por arriba?
-                    y = y + y_offset * 2.5
+                    y = y + y_offset * 3.5 # +1
 
                 if ixa == 0 and idx < 200:
                     y = y - y_offset * 0.7
@@ -172,7 +172,7 @@ for ixa,algorithm in enumerate(config['HYBRID_ALGORITHMS']):
                     y = y - y_offset * 0.1 #* se acerca 
                 if ixa == 3 and idx < 300 and idx > 200:
                     # y = y - y_offset * 0.01 
-                    y = y #estará cerca de la linea?
+                    y = y  #estará cerca de la linea?
 
             elif col.upper() in ['NSGA3']:
                 y = y + y_offset
