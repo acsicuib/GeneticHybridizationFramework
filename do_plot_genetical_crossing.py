@@ -12,8 +12,8 @@ config = load_bash_config('script_constants.sh')
 # middle_path_sol_exp = "results/ga_singles/solutions/ntw_722_050-050-025_C/obj_distance-occ_variance-pw_consumption/Replicas050/Genetics/exp_single"
 # middle_path_ana_exp = "results/ga_singles/analysis/ntw_722_050-050-025_C/obj_distance-occ_variance-pw_consumption/Replicas050/Genetics/exp_single"
 # network_file = "results/ga_singles/networks/ntw_722_050-050-025_C"  # You'll need to provide the correct network file path
-# results_path = "results/"
-results_path = "results_longest/"
+results_path = "results/"
+# results_path = "results_longest/"
 
 # N_EXECUTIONS = config['N_EXECUTIONS']
 N_EXECUTIONS = 30
@@ -27,7 +27,7 @@ SEEDS = range(1,N_EXECUTIONS+1)
  
 SEQ_HYBRIDS = 17
 path_exp = results_path+"hybridization/"
-replicas = 2  # Increase this to the desired number of replicas
+replicas = 30
 file = "{algorithm}_{replica}_400-500_SV0-CV2-MV1_MM0.2-MC0.1-MB0.1.txt"
 
 # col_dumps = np.array(ast.literal_eval(config['HYBRID_GEN_STEPS'])).ravel()
