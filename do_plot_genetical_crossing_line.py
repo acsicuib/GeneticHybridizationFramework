@@ -6,12 +6,16 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 
 
+COLORS = dict(zip("NSGA2 NSGA3 UNSGA3 SMSEMOA Hybrid".split(),['#ff8500', '#FF595E', '#1982C4', '#6A4C93' ,'#8AC926']))
+
+
+
 config = load_bash_config('script_constants.sh') 
 # middle_path_sol_exp = "results/ga_singles/solutions/ntw_722_050-050-025_C/obj_distance-occ_variance-pw_consumption/Replicas050/Genetics/exp_single"
 # middle_path_ana_exp = "results/ga_singles/analysis/ntw_722_050-050-025_C/obj_distance-occ_variance-pw_consumption/Replicas050/Genetics/exp_single"
 # network_file = "results/ga_singles/networks/ntw_722_050-050-025_C"  # You'll need to provide the correct network file path
-results_path = "results/"
-# results_path = "results_longest/"
+# results_path = "results/"
+results_path = "results_longest/"
 
 # N_EXECUTIONS = config['N_EXECUTIONS']
 N_EXECUTIONS = 30
@@ -26,7 +30,7 @@ SEEDS = range(1,N_EXECUTIONS+1)
 SEQ_HYBRIDS = 17
 path_exp = results_path+"hybridization/"
 
-replicas = 30
+replicas = 2
 file = "{algorithm}_{replica}_400-500_SV0-CV2-MV1_MM0.2-MC0.1-MB0.1.txt"
 
 # col_dumps = np.array(ast.literal_eval(config['HYBRID_GEN_STEPS'])).ravel()
@@ -86,6 +90,10 @@ for ixa,algorithm in enumerate(config['HYBRID_ALGORITHMS']):
     axt.set_title(algorithm)
     axt.set_ylim(0,1)
     
+    # Set y-axis ticks to percentage
+    axt.set_yticks(np.linspace(0, 1, 6))
+    axt.set_yticklabels([f"{int(y*100)}%" for y in np.linspace(0, 1, 6)])
+    
     dt = df[df['algorithm'] == algorithm].loc[:,filter + ['replica']]
     dt.rename(columns=rename_filter,inplace=True)
 
@@ -96,7 +104,8 @@ for ixa,algorithm in enumerate(config['HYBRID_ALGORITHMS']):
     # Plot mean and fill std
     line_objs = {}
     for col in config['HYBRID_ALGORITHMS']:
-        line, = axt.plot(dg_mean.index, dg_mean[col], label=col, linewidth=2)
+        label_col = col.replace("Hybrids", "Hybrid")
+        line, = axt.plot(dg_mean.index, dg_mean[col], label=label_col, color=COLORS[label_col])
         # axt.fill_between(dg_mean.index, 
         #                  dg_mean[col] - dg_std[col], 
         #                  dg_mean[col] + dg_std[col], 
@@ -114,7 +123,7 @@ for ixa,algorithm in enumerate(config['HYBRID_ALGORITHMS']):
             x_val = dg_mean.index[next_idx]
             y_val = dg_mean.iloc[next_idx][col]
             axt.plot(x_val, y_val, marker='o', color=line_objs[col].get_color(), markersize=5, markeredgewidth=2)
-
+            # print(line_objs[col].get_color())
     # Annotate with percentage text at specific indices: 101, 201, 301, 401
     target_indices = [101, 201, 301, 401]
     algs = config['HYBRID_ALGORITHMS']
@@ -188,11 +197,13 @@ for ixa,algorithm in enumerate(config['HYBRID_ALGORITHMS']):
             else:
                 va = 'bottom'
             axt.text(idx - x_offset, y, f"{percent:.1f}%", ha='center', va=va, fontsize=8, color=color, weight='bold')
-
+        axt.set_xlabel('Generation')
+        axt.set_ylabel('Percentage of genetic material')
+        
 # Remove per-axes legend
 # Add a single legend for the whole figure, outside the rightmost subplot
 handles, labels = axs[0,0].get_legend_handles_labels()
-fig.legend(handles, labels, loc='center left', bbox_to_anchor=(1.05, 0.5), fontsize=14)
+fig.legend(handles, labels, loc='upper center', bbox_to_anchor=(0.5, 1.05), fontsize=10, ncol=len(labels))
 fig.savefig(f'{results_path}plots/genetic_crossing_lines.png', dpi=300, bbox_inches='tight')
 plt.close(fig)  # Close the figure to free memory
 

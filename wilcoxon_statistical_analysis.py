@@ -7,6 +7,8 @@ import seaborn as sns
 from utils import load_bash_config
 import os
 
+COLORS = dict(zip("NSGA2 NSGA3 UNSGA3 SMSEMOA Hybrid".split(),['#ff8500', '#FF595E', '#1982C4', '#6A4C93' ,'#8AC926']))
+
 
 def perform_wilcoxon_tests(df, metrics, algorithms, alpha=0.05):
     """
@@ -192,27 +194,32 @@ def create_heatmap(results, metrics, algorithms, output_file='plots/wilcoxon_hea
     plt.show()
 
 def create_boxplots(df, metrics, algorithms, output_file='plots/metrics_boxplots.png'):
-    """Create boxplots for each metric across algorithms"""
+    """Create boxplots for each metric across algorithms in a 2-row, 3-column layout"""
     # Get final generation data
     final_gen_data = df.groupby(['Algorithm', 'Seed'])['Generation'].max().reset_index()
     final_data = df.merge(final_gen_data, on=['Algorithm', 'Seed', 'Generation'])
     
     # Filter for algorithms we're interested in
     final_data = final_data[final_data['Algorithm'].isin(algorithms)]
-    
-    fig, axes = plt.subplots(1, len(metrics), figsize=(5*len(metrics), 6))
-    if len(metrics) == 1:
-        axes = [axes]
+    final_data["Algorithm"] = final_data["Algorithm"].str.replace("Hybrids", "Hybrid")
+
+    n_metrics = len(metrics)
+    nrows, ncols = 2, 3
+    fig, axes = plt.subplots(nrows, ncols, figsize=(5*ncols, 6*nrows))
+    axes = axes.flatten()
     
     for idx, metric in enumerate(metrics):
         ax = axes[idx]
-        
         # Create boxplot
-        sns.boxplot(data=final_data, x='Algorithm', y=metric, ax=ax)
+        sns.boxplot(data=final_data, x='Algorithm', y=metric, ax=ax, palette=COLORS)
         ax.set_title(f'{metric} Distribution by Algorithm')
         ax.set_xlabel('Algorithm')
         ax.set_ylabel(metric)
         ax.tick_params(axis='x', rotation=45)
+    
+    # Hide any unused subplots
+    for idx in range(n_metrics, nrows * ncols):
+        fig.delaxes(axes[idx])
     
     plt.tight_layout()
     plt.savefig(output_file, dpi=300, bbox_inches='tight')
@@ -488,7 +495,7 @@ def create_win_rate_heatmap(individual_results, metrics, algorithms, output_file
     axes = axes.flatten()
     if len(metrics) == 1:
         axes = [axes[0]]
-    
+    algorithmsLabels = ["NSGA2", "NSGA3", "UNSGA3", "SMSEMOA", "Hybrid"]
     for idx, metric in enumerate(metrics):
         if idx >= len(axes):
             break
@@ -530,13 +537,13 @@ def create_win_rate_heatmap(individual_results, metrics, algorithms, output_file
                    vmax=100,
                    cbar=show_cbar,
                    cbar_kws={'label': 'Win Rate (%)'} if show_cbar else None,
-                   xticklabels=algorithms,
-                   yticklabels=algorithms,
+                   xticklabels=algorithmsLabels,
+                   yticklabels=algorithmsLabels,
                    ax=ax)
         
         ax.set_title(f'{metric} - Win Rates (%)', fontsize=18)
-        ax.set_xlabel('Algorithm 2')
-        ax.set_ylabel('Algorithm 1')
+        # ax.set_xlabel('Algorithm 2')
+        # ax.set_ylabel('Algorithm 1')
         ax.set_xticklabels(ax.get_xticklabels(), rotation=0, fontsize=10)
         ax.set_yticklabels(ax.get_yticklabels(), rotation=0, fontsize=10)
     
