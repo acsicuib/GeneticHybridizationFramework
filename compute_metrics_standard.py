@@ -7,9 +7,9 @@ import numpy as np
 from utils import load_bash_config, load_data_normalized
 from datetime import datetime
 import sys
-import pickle
+# import pickle
 import os
-from tqdm import tqdm
+# from tqdm import tqdm
 
 if __name__ == "__main__":
     config = load_bash_config('script_constants.sh') #Dont detect all the variables

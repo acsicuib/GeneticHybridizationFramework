@@ -1,9 +1,8 @@
 import pandas as pd
 import numpy as np
-import ast
 from utils import load_bash_config
 import matplotlib.pyplot as plt
-import seaborn as sns
+
 
 
 COLORS = dict(zip("NSGA2 NSGA3 UNSGA3 SMSEMOA Hybrid".split(),['#ff8500', '#FF595E', '#1982C4', '#6A4C93' ,'#8AC926']))

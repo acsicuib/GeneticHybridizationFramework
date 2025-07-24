@@ -2,6 +2,7 @@
 
 source script_constants.sh
 source script_functions.sh
+## This file modify and extends some vars from script_constants.sh
 
 ###############################################################################
 # Constants
