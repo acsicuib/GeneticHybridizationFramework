@@ -91,4 +91,4 @@ HIDDEMS – PID2021-128071OB-I00 MICIU/AEI/10.13039/501100011033 and FEDER,UE
 ## Note
 This project and repository are under continuous development.
 # Acknowledge 
-This project extends the [original report](https://github.com/sergivivo/ResourcesOptimization_01)  in terms of experimentation analysis and plotting. 
+This project extends the [original repo](https://github.com/sergivivo/ResourcesOptimization_01)  in terms of experimentation, analysis, and plotting. 
