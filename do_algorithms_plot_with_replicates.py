@@ -10,6 +10,7 @@ def save_plot(fig, filename, dpi=300, bbox_inches='tight'):
     os.makedirs(f'{results_path}/plots', exist_ok=True)
     # Save the plot
     fig.savefig(f'{results_path}/plots/{filename}.png', dpi=dpi, bbox_inches=bbox_inches)
+    fig.savefig(f'{results_path}plots/{filename}.pdf', dpi=dpi, bbox_inches=bbox_inches)
     plt.close(fig)  # Close the figure to free memory
 
 def plot_metrics_time_series(file_metrics,file_hybrids=None):

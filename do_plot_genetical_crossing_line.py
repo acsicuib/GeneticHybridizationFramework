@@ -204,6 +204,7 @@ for ixa,algorithm in enumerate(config['HYBRID_ALGORITHMS']):
 handles, labels = axs[0,0].get_legend_handles_labels()
 fig.legend(handles, labels, loc='upper center', bbox_to_anchor=(0.5, 1.05), fontsize=10, ncol=len(labels))
 fig.savefig(f'{results_path}plots/genetic_crossing_lines.png', dpi=300, bbox_inches='tight')
+fig.savefig(f'{results_path}plots/genetic_crossing_lines.pdf', dpi=300, bbox_inches='tight')
 plt.close(fig)  # Close the figure to free memory
 
 

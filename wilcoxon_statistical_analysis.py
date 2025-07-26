@@ -223,6 +223,7 @@ def create_boxplots(df, metrics, algorithms, output_file='plots/metrics_boxplots
     
     plt.tight_layout()
     plt.savefig(output_file, dpi=300, bbox_inches='tight')
+    plt.savefig(output_file.replace('.png', '.pdf'), dpi=300, bbox_inches='tight')
     plt.show()
 
 def analyze_convergence_speed(df, metrics, algorithms, alpha=0.05):
@@ -554,6 +555,7 @@ def create_win_rate_heatmap(individual_results, metrics, algorithms, output_file
 
     plt.tight_layout()
     plt.savefig(output_file, dpi=300, bbox_inches='tight')
+    plt.savefig(output_file.replace('.png', '.pdf'), dpi=300, bbox_inches='tight')
     plt.show()
 
 def create_win_rate_pvalue_effectsize_heatmap(individual_results, results, metrics, algorithms, output_file='plots/win_rate_pvalue_effectsize_heatmap.png'):
